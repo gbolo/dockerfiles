@@ -9,7 +9,7 @@ MAINTAINER George Bolo <gbolo@linuxctl.com>
 
 ARG NODEUSER=nodejs
 ARG BASEDIR=/home/${NODEUSER}/blockchain-explorer
-ARG WORKDIR=${BASEDIR}/explorer_1
+ARG WORKINGDIR=${BASEDIR}/explorer_1
 
 # -----------------------------------------------------------------------------
 # Installation
@@ -21,7 +21,7 @@ RUN apk add --no-cache git bash && \
 USER ${NODEUSER}
 RUN git clone --single-branch -b master --depth 1 https://github.com/hyperledger/blockchain-explorer ${BASEDIR}
 
-WORKDIR ${WORKDIR}
+WORKDIR ${WORKINGDIR}
 RUN npm install semver grunt grunt-auto-install grunt-contrib-uglify grunt-contrib-copy && \
     grunt
 
