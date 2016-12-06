@@ -22,7 +22,7 @@ USER ${NODEUSER}
 RUN git clone --single-branch -b master --depth 1 https://github.com/hyperledger/blockchain-explorer ${BASEDIR}
 
 WORKDIR ${WORKDIR}
-RUN npm install grunt grunt-auto-install grunt-contrib-uglify grunt-contrib-copy && \
+RUN npm install semver grunt grunt-auto-install grunt-contrib-uglify grunt-contrib-copy && \
     grunt
 
 # -----------------------------------------------------------------------------
