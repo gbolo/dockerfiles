@@ -15,14 +15,14 @@ ARG WORKINGDIR=${BASEDIR}/explorer_1
 # Installation
 # -----------------------------------------------------------------------------
 RUN apk add --no-cache git bash && \
-    npm install npm semver bower grunt-cli graceful-fs@4.1.5 minimatch@3.0.2 -g && \
+    npm install npm bower grunt-cli graceful-fs@4.1.5 minimatch@3.0.2 -g && \
     adduser -Ds /bin/bash ${NODEUSER}
 
 USER ${NODEUSER}
 RUN git clone --single-branch -b master --depth 1 https://github.com/hyperledger/blockchain-explorer ${BASEDIR}
 
-WORKDIR ${WORKINGDIR}
-RUN npm install semver grunt grunt-auto-install grunt-contrib-uglify grunt-contrib-copy && \
+WORKDIR /home/nodejs/blockchain-explorer/explorer_1
+RUN npm install grunt grunt-auto-install grunt-contrib-uglify grunt-contrib-copy && \
     grunt
 
 # -----------------------------------------------------------------------------
