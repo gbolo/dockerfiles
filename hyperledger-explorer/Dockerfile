@@ -21,7 +21,7 @@ RUN apk add --no-cache git bash && \
 USER ${NODEUSER}
 RUN git clone --single-branch -b master --depth 1 https://github.com/hyperledger/blockchain-explorer ${BASEDIR}
 
-WORKDIR /home/nodejs/blockchain-explorer/explorer_1
+WORKDIR ${WORKINGDIR}
 RUN npm install grunt grunt-auto-install grunt-contrib-uglify grunt-contrib-copy && \
     grunt
 
