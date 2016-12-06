@@ -15,7 +15,7 @@ ARG WORKDIR=${BASEDIR}/explorer_1
 # Installation
 # -----------------------------------------------------------------------------
 RUN apk add --no-cache git bash && \
-    npm install npm bower grunt-cli graceful-fs@4.1.5 minimatch@3.0.2 -g && \
+    npm install npm semver bower grunt-cli graceful-fs@4.1.5 minimatch@3.0.2 -g && \
     adduser -Ds /bin/bash ${NODEUSER}
 
 USER ${NODEUSER}
