@@ -1,0 +1,25 @@
+{
+  "rabbitmq": {
+    "host": "rabbitmq",
+    "port": 5672,
+    "vhost": "/",
+    "user": "guest",
+    "password": "guest"
+  },
+  "redis": {
+    "host": "redis",
+    "port": 6379
+  },
+  "handlers":{
+    "default":{
+      "type":"set",
+      "handlers":[
+        "stdout"
+      ]
+    },
+    "stdout":{
+      "type":"pipe",
+      "command":"cat"
+    }
+  }
+}

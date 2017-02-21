@@ -1,0 +1,26 @@
+{
+  "client": {
+    "name": "client-go",
+    "address": "blahblah"
+  },
+  "checks": [
+    {
+      "name": "check-load",
+      "standalone": true,
+      "interval": 20,
+      "command": "go-check-load -w 1.0,2.0,3.0 -c 2.0,3.0,4.0"
+    },
+    {
+      "name": "check-uptime",
+      "standalone": true,
+      "interval": 60,
+      "command": "go-check-uptime -w 3600 -c 300"
+    },
+    {
+      "name": "check-tcp-linuxctl",
+      "standalone": true,
+      "interval": 20,
+      "command": "go-check-tcp -H linuxctl.com -p 80 -w 1 -c 2"
+    }
+  ]
+}
