@@ -59,6 +59,18 @@ services:
     depends_on:
       - rabbitmq
 
+  sensu-client-go-fix:
+    image: gbolo/sensu-client:golang-fix
+    volumes:
+      - ./test/client/config:/root/config:ro
+    environment:
+      - RABBITMQ_URI=amqp://guest:guest@rabbitmq:5672/%2f
+    command: /usr/local/bin/sensu-client -c /root/config/sensu-client-go-nosub.json
+    networks:
+      - sensu
+    depends_on:
+      - rabbitmq
+
   sensu-client-ruby:
     image: gbolo/c7-sensu:latest
     volumes:
