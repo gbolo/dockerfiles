@@ -11,23 +11,11 @@
     "password": "guest"
   },
   "checks": {
-    "check-load": {
-      "name": "check-load",
+    "simple-ls": {
+      "name": "simple-ls",
       "standalone": true,
       "interval": 20,
-      "command": "go-check-load -w 1.0,2.0,3.0 -c 2.0,3.0,4.0"
-    },
-    "check-uptime": {
-      "name": "check-uptime",
-      "standalone": true,
-      "interval": 60,
-      "command": "go-check-uptime -w 3600 -c 300"
-    },
-    "check-tcp-linuxctl": {
-      "name": "check-tcp-linuxctl",
-      "standalone": true,
-      "interval": 20,
-      "command": "go-check-tcp -H linuxctl.com -p 80 -w 1 -c 2"
+      "command": "ls ."
     }
   }
 }
