@@ -1,26 +1,35 @@
 {
   "client": {
     "name": "client-go",
-    "address": "blahblah"
+    "address": "go-client.docker.bridge"
   },
   "checks": [
     {
       "name": "check-load",
       "standalone": true,
       "interval": 20,
-      "command": "go-check-load -w 1.0,2.0,3.0 -c 2.0,3.0,4.0"
+      "command": "go-check-load -w 1.0,2.0,3.0 -c 2.0,3.0,4.0",
+      "subscriptions": [
+        "somesubscription"
+      ]
     },
     {
       "name": "check-uptime",
       "standalone": true,
       "interval": 60,
-      "command": "go-check-uptime -w 3600 -c 300"
+      "command": "go-check-uptime -w 3600 -c 300",
+      "subscriptions": [
+        "somesubscription"
+      ]
     },
     {
       "name": "check-tcp-linuxctl",
       "standalone": true,
       "interval": 20,
-      "command": "go-check-tcp -H linuxctl.com -p 80 -w 1 -c 2"
+      "command": "go-check-tcp -H linuxctl.com -p 80 -w 1 -c 2",
+      "subscriptions": [
+        "somesubscription"
+      ]
     }
   ]
 }
