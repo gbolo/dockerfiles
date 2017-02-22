@@ -1,6 +1,6 @@
 {
   "client": {
-    "name": "client-go",
+    "name": "client-go-nosub",
     "address": "go-client.docker.bridge"
   },
   "checks": [
