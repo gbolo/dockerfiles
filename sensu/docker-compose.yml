@@ -47,28 +47,13 @@ services:
       - rabbitmq
       - redis
 
-  sensu-client-go-alpine:
-    image: alpine:latest
-    volumes:
-      - ./test/client/bin:/usr/local/bin:ro
-      - ./test/client/config:/root/config:ro
-      - ./test/client/scripts:/root/scripts:ro
-    environment:
-      - RABBITMQ_URI=amqp://guest:guest@rabbitmq:5672/%2f
-    command: /usr/local/bin/sensu-client -c /root/config/sensu-client-go.json
-    networks:
-      - sensu
-    depends_on:
-      - rabbitmq
-
   sensu-client-go:
     image: gbolo/sensu-client:golang
     volumes:
       - ./test/client/config:/root/config:ro
-      - ./test/client/scripts:/root/scripts:ro
     environment:
       - RABBITMQ_URI=amqp://guest:guest@rabbitmq:5672/%2f
-    command: sensu-client-go -c /root/config/sensu-client-go.json
+    command: /usr/local/bin/sensu-client -c /root/config/sensu-client-go.json
     networks:
       - sensu
     depends_on:
@@ -79,13 +64,11 @@ services:
     volumes:
       - ./test/client/bin:/usr/local/bin:ro
       - ./test/client/config:/root/config:ro
-      - ./test/client/scripts:/root/scripts:ro
     command: /opt/sensu/bin/sensu-client -c /root/config/sensu-client-ruby.json
     networks:
       - sensu
     depends_on:
       - rabbitmq
-
 
 networks:
   sensu:

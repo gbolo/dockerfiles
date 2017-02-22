@@ -1,3 +1,4 @@
 # ignore testing bins
 
 sensu/**/bin/*
+!**/.gitkeep
