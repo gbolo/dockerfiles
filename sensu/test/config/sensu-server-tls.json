@@ -1,0 +1,29 @@
+{
+  "rabbitmq": {
+    "host": "rabbitmq",
+    "port": 5671,
+    "vhost": "/",
+    "user": "guest",
+    "password": "guest",
+    "ssl": {
+      "cert_chain_file": "/root/tls/client_rsa-x509.pem",
+      "private_key_file": "/root/tls/client_rsa-key.pem"
+    }
+  },
+  "redis": {
+    "host": "redis",
+    "port": 6379
+  },
+  "handlers":{
+    "default":{
+      "type":"set",
+      "handlers":[
+        "stdout"
+      ]
+    },
+    "stdout":{
+      "type":"pipe",
+      "command":"cat"
+    }
+  }
+}

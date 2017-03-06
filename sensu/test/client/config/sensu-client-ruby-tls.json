@@ -1,0 +1,25 @@
+{
+  "client": {
+    "name": "client-ruby",
+    "address": "some.docker.network"
+  },
+  "rabbitmq": {
+    "host": "rabbitmq",
+    "port": 5671,
+    "vhost": "/",
+    "user": "guest",
+    "password": "guest",
+    "ssl": {
+      "cert_chain_file": "/root/tls/client_rsa-x509.pem",
+      "private_key_file": "/root/tls/client_rsa-key.pem"
+    }
+  },
+  "checks": {
+    "simple-ls": {
+      "name": "simple-ls",
+      "standalone": true,
+      "interval": 20,
+      "command": "ls ."
+    }
+  }
+}

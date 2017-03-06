@@ -1,0 +1,89 @@
+version: '2.1'
+
+services:
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    volumes:
+      - ./test/tls:/etc/rabbitmq/tls:ro
+      - ./test/config/rabbitmq.config:/etc/rabbitmq/rabbitmq.config:ro
+    ports:
+      - 15672:15672
+      - 5671:5671
+    networks:
+      - sensu
+
+  redis:
+    image: redis:3-alpine
+    networks:
+      - sensu
+
+  sensu-server:
+    image: gbolo/c7-sensu-server:latest
+    volumes:
+      - ./test/config/sensu-server-tls.json:/etc/sensu/conf.d/server.json:ro
+      - ./test/tls:/root/tls:ro
+    networks:
+      - sensu
+    depends_on:
+      - rabbitmq
+      - redis
+
+  sensu-api:
+    image: gbolo/c7-sensu-api:latest
+    volumes:
+      - ./test/config/sensu-api-tls.json:/etc/sensu/conf.d/api.json:ro
+      - ./test/tls:/root/tls:ro
+    networks:
+      - sensu
+    depends_on:
+      - rabbitmq
+      - redis
+
+  sensu-uchiwa:
+    image: gbolo/c7-sensu-uchiwa:latest
+    ports:
+      - 3000:3000
+    volumes:
+      - ./test/config/sensu-uchiwa.json:/etc/sensu/uchiwa.json:ro
+    networks:
+      - sensu
+    depends_on:
+      - rabbitmq
+      - redis
+
+  sensu-client-go:
+    image: gbolo/sensu-client:golang
+    volumes:
+      - ./test/client/config:/root/config:ro
+      - ./test/tls:/root/tls:ro
+    environment:
+      - RABBITMQ_URI=amqp://guest:guest@rabbitmq:5671/%2f
+    # command: /usr/local/bin/sensu-client -c /root/config/sensu-client-go.json
+    command: echo disabled
+    networks:
+      - sensu
+    depends_on:
+      - rabbitmq
+
+  sensu-client-ruby:
+    image: gbolo/c7-sensu:latest
+    volumes:
+      - ./test/client/bin:/usr/local/bin:ro
+      - ./test/client/config:/root/config:ro
+      - ./test/tls:/root/tls:ro
+    command: /opt/sensu/bin/sensu-client -c /root/config/sensu-client-ruby-tls.json
+    networks:
+      - sensu
+    depends_on:
+      - rabbitmq
+
+networks:
+  sensu:
+    driver: bridge
+    enable_ipv6: false
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.238.0/24
+          gateway: 172.16.238.1
