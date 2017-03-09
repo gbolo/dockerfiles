@@ -1,0 +1,30 @@
+{
+  "client": {
+    "name": "client-go-tls",
+    "address": "go-client.docker.bridge"
+  },
+  "rabbitmq": [
+    {
+      "host": "sensu",
+      "port": "5671",
+      "vhost": "/",
+      "user": "guest",
+      "password": "guest",
+      "heartbeat": 30,
+      "prefetch": 50,
+      "ssl": {
+        "ca_cert_file": "/data/tls/ca_rsa-x509.pem",
+        "cert_chain_file": "/data/tls/client_rsa-x509.pem",
+        "private_key_file": "/data/tls/client_rsa-key.pem"
+      }
+    }
+  ],
+  "checks": [
+    {
+      "name": "simple-ls",
+      "standalone": true,
+      "interval": 10,
+      "command": "ls ."
+    }
+  ]
+}

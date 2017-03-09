@@ -10,7 +10,7 @@
     "user": "guest",
     "password": "guest",
     "ssl": {
-      "cert_chain_file": "/root/tls/client_rsa-x509.pem",
+      "cert_chain_file": "/root/tls/chain_client_rsa-x509.pem",
       "private_key_file": "/root/tls/client_rsa-key.pem"
     }
   },

@@ -6,12 +6,14 @@ services:
     image: rabbitmq:3-management-alpine
     volumes:
       - ./test/tls:/etc/rabbitmq/tls:ro
-      - ./test/config/rabbitmq.config:/etc/rabbitmq/rabbitmq.config:ro
+      - ./test/config/rabbitmq-secure.config:/etc/rabbitmq/rabbitmq.config:ro
     ports:
       - 15672:15672
       - 5671:5671
     networks:
-      - sensu
+      sensu:
+        aliases:
+          - sensu
 
   redis:
     image: redis:3-alpine
@@ -53,14 +55,11 @@ services:
       - redis
 
   sensu-client-go:
-    image: gbolo/sensu-client:golang
+    image: gbolo/sensu-client:golang-tls
     volumes:
       - ./test/client/config:/root/config:ro
-      - ./test/tls:/root/tls:ro
-    environment:
-      - RABBITMQ_URI=amqp://guest:guest@rabbitmq:5671/%2f
-    # command: /usr/local/bin/sensu-client -c /root/config/sensu-client-go.json
-    command: echo disabled
+      - ./test/tls:/data/tls:ro
+    command: go-sensu-client-tls -c /root/config/sensu-client-go-tls.json
     networks:
       - sensu
     depends_on:
