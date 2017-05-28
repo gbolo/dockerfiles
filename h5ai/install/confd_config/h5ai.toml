@@ -1,0 +1,6 @@
+[template]
+src  = "options.json"
+dest = "/data/h5ai/_h5ai/private/conf/options.json"
+uid  = 65534
+gid  = 65534
+mode = "0444"
