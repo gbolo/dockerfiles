@@ -16,5 +16,5 @@ RUN   set -xe; \
 
 # EXPOSE AN ENTRY
 EXPOSE      9000
-ENTRYPOINT  ["/entrypoint.sh", "/usr/local/bin/dumb-init", "--"]
-CMD         ["php-fpm7", "--nodaemonize"]
+ENTRYPOINT  ["/entrypoint.sh", "/usr/local/bin/dumb-init", "--", "php-fpm7"]
+CMD         ["--nodaemonize"]
