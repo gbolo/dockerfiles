@@ -6,13 +6,13 @@ function ALLOWED_EMAILS {
     break
   else
     echo "OAUTH2_PROXY_ALLOWED_EMAILS is set"
-    mkdir -p $(dirname /data/allowed_emails.txt)
-    truncate -s 0 /data/allowed_emails.txt
+    mkdir -p $(dirname ${OAUTH2_PROXY_ALLOWED_EMAILS_FILE})
+    truncate -s 0 ${OAUTH2_PROXY_ALLOWED_EMAILS_FILE}
   fi
 
   for email in ${OAUTH2_PROXY_ALLOWED_EMAILS}; do
-    echo "ADDING ${email} TO /data/allowed_emails.txt"
-    echo ${email} >> /data/allowed_emails.txt
+    echo "ADDING ${email} TO ${OAUTH2_PROXY_ALLOWED_EMAILS_FILE}"
+    echo ${email} >> ${OAUTH2_PROXY_ALLOWED_EMAILS_FILE}
   done
 
 }
