@@ -1,4 +1,4 @@
-FROM gbolo/base:alpine
+FROM gbolo/baseos:alpine
 
 # ENVIRONMENT VARIABLES (don't reference other env, use arg vars)
 ENV   H5AI_VERSION=0.29.0 \

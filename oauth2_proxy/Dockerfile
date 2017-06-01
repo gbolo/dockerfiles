@@ -1,4 +1,4 @@
-FROM gbolo/base:alpine
+FROM gbolo/baseos:alpine
 
 # ENVIRONMENT VARIABLES (don't reference other env, use arg vars)
 ENV   OAUTH2_PROXY_VERSION=2.2 \
