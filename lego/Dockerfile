@@ -13,5 +13,5 @@ RUN   set -xe; \
       rm -rf /tmp/install
 
 # EXPOSE AN ENTRY
-EXPOSE      9000
+EXPOSE      80 443
 ENTRYPOINT  ["/entrypoint.sh", "/usr/local/bin/dumb-init", "--", "lego"]
