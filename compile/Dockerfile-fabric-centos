@@ -1,5 +1,5 @@
 # Dockerfile for compiling Hyperledger Fabric binaries for RHEL7 based systems
-# Builds of Fabric has been tested on CentOS 7
+# Use as an aid for compiling fabric in your automation process
 # WARNING: USE AT YOUR OWN RISK!
 
 FROM centos:7
@@ -21,7 +21,6 @@ LABEL maintainer="George Bolo <gbolo@linuxctl.com>" \
       com.linuxctl.purpose=${purpose} \
       com.linuxctl.project=${project}
 
-
 # ENVIRONMENT VARIABLES (don't reference other env, use arg vars)
 ENV   BASE_OS=${baseos} \
       BASE_CHANGE_DATE=${basechangedate} \
@@ -37,10 +36,12 @@ RUN   set -xe; \
       yum install -y gcc gcc-c++ autoconf automake unzip binutils make patch git \
         libtool libtool-ltdl-devel zlib zlib-devel bzip2 bzip2-devel && \
       yum clean all && \
+# INSTALL GO
       mkdir -p ${GOROOT} ${GOPATH} && \
       curl -o /tmp/go.tar.gz ${GO_URL} && \
       tar -xvzf /tmp/go.tar.gz -C /opt/ && \
       rm -rf /tmp/go.tar.gz && \
+# FIX LIBTOOL
       curl -L -o /tmp/libtool.tgz http://ftpmirror.gnu.org/libtool/libtool-2.4.2.tar.gz && \
       tar -xvzf /tmp/libtool.tgz && \
       rm -rf /tmp/libtool.tgz && \
