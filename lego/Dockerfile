@@ -1,8 +1,8 @@
 FROM gbolo/baseos:alpine
 
 # ENVIRONMENT VARIABLES (don't reference other env, use arg vars)
-ENV   LEGO_VERSION=0.3.1 \
-      LEGO_SHA1=4d4bf70f6f4dcd455a426f5eef975fdb040aaf1b
+ENV   LEGO_VERSION=0.4.0 \
+      LEGO_SHA1=8ecfefccb5abbddbd2d220c490ad9df90bbabe7d
 
 # INSTALL
 COPY install /tmp/install

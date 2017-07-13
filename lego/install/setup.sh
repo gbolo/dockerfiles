@@ -20,7 +20,8 @@ fi
 apk del openssl
 
 # install lego
-tar -xvf ${LEGO_FILENAME} --strip 1 lego/lego -C /usr/local/bin/
+tar -xvf ${LEGO_FILENAME} lego_linux_amd64 -C /usr/local/bin/
+mv /usr/local/bin/lego_linux_amd64 /usr/local/bin/lego
 chmod 555 /usr/local/bin/lego
 
 # copy over entrypoint
