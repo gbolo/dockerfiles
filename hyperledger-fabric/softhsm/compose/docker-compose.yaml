@@ -1,0 +1,77 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+version: '2'
+
+networks:
+  fabric:
+
+services:
+
+  ca.fabric.linuxctl.com:
+    container_name: fabric-ca
+    image: gbolo/fabric-ca:1.0.0-softhsm
+    volumes:
+      - ./files/config/ca-server-1.0.0-pkcs11.yaml:/etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml:ro
+    environment:
+      - FABRIC_CA_SERVER_DEBUG=false
+      - FABRIC_CA_SERVER_BCCSP_DEFAULT=PKCS11
+      - FABRIC_CA_SERVER_BCCSP_PKCS11_LIBRARY=/usr/lib/softhsm/libsofthsm2.so
+      - FABRIC_CA_SERVER_BCCSP_PKCS11_LABEL=ForFabric
+      - FABRIC_CA_SERVER_BCCSP_PKCS11_PIN=98765432
+      - FABRIC_CA_SERVER_BCCSP_PKCS11_SENSITIVEKEYS=true
+      - FABRIC_CA_SERVER_BCCSP_PKCS11_SOFTWAREVERIFY=true
+    networks:
+      - fabric
+
+  ca-client-register:
+    container_name: fabric-ca-client
+    image: gbolo/fabric-ca:1.0.0-softhsm
+    volumes:
+      - ./files/bin/register_users.sh:/tmp/register_users.sh
+    command: /bin/bash -c 'sleep 3; sh /tmp/register_users.sh ca.fabric.linuxctl.com'
+    depends_on:
+      - ca.fabric.linuxctl.com
+    networks:
+      - fabric
+
+  peer0.fabric.linuxctl.com:
+    container_name: fabric-peer0
+    image: gbolo/fabric-peer:1.0.0-softhsm
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./files/config/ca-client-1.0.0-pkcs11.yaml:/etc/hyperledger/fabric/client/fabric-ca-client-config.yaml
+      - ./files/config/core-1.0.0-pkcs11.yaml:/etc/hyperledger/fabric/core.yaml:ro
+    environment:
+      # FOR ENROLLMENT
+      - FABRIC_CA_CLIENT_URL=http://peer0:testing@ca.fabric.linuxctl.com:7054
+      - FABRIC_CA_CLIENT_CSR_CN=peer0
+      - FABRIC_CA_CLIENT_CSR_HOSTS=peer0.fabric.linuxctl.com
+      - FABRIC_CA_CLIENT_BCCSP_DEFAULT=PKCS11
+      - FABRIC_CA_CLIENT_BCCSP_PKCS11_LIBRARY=/usr/lib/softhsm/libsofthsm2.so
+      - FABRIC_CA_CLIENT_BCCSP_PKCS11_LABEL=ForFabric
+      - FABRIC_CA_CLIENT_BCCSP_PKCS11_PIN=98765432
+      - FABRIC_CA_CLIENT_BCCSP_PKCS11_SENSITIVEKEYS=false
+      - FABRIC_CA_CLIENT_BCCSP_PKCS11_SOFTWAREVERIFY=false
+      # FOR PEER DAEMON BCCSP
+      - CORE_PEER_BCCSP_DEFAULT=PKCS11
+      - CORE_PEER_BCCSP_PKCS11_LIBRARY=/usr/lib/softhsm/libsofthsm2.so
+      - CORE_PEER_BCCSP_PKCS11_LABEL=ForFabric
+      - CORE_PEER_BCCSP_PKCS11_PIN=98765432
+      # these options are broken...
+      # - CORE_PEER_BCCSP_PKCS11_SENSITIVEKEYS=false
+      # - CORE_PEER_BCCSP_PKCS11_SOFTWAREVERIFY=false
+      # REGULAR PEER DAEMON OPTIONS
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_fabric
+      - CORE_LOGGING_LEVEL=INFO
+      - CORE_PEER_TLS_ENABLED=false
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_ID=peer0.fabric.linuxctl.com
+      - CORE_PEER_ADDRESS=peer0.fabric.linuxctl.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.fabric.linuxctl.com:7051
+      - CORE_PEER_LOCALMSPID=Org1MSP
+    command: /bin/bash -c 'sleep 10; ./usr/local/bin/entrypoint.sh peer node start --peer-defaultchain=false'
+    networks:
+      - fabric
