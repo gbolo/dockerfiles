@@ -8,7 +8,7 @@
 
 if [ $# -eq 0 ]
   then
-    echo "Must Supply 1 argument: peer, orderer, ca"
+    echo "Must Supply 1 argument: peer, orderer, ca, tools"
     exit
 fi
 
@@ -73,6 +73,27 @@ COMPILE_FABRIC_ORDERER() {
   ${GOROOT}/bin/go build -o /usr/local/bin/orderer -ldflags "$LD_FLAGS"
 }
 
+# compile tools
+COMPILE_FABRIC_TOOLS() {
+  for tool in cryptogen configtxlator; do
+    cd ${GOPATH}/src/github.com/hyperledger/fabric/common/tools/${tool}
+    ${GOROOT}/bin/go build -o /usr/local/bin/${tool} \
+      -ldflags "-X github.com/hyperledger/fabric/common/tools/${tool}/metadata.Version=${PROJECT_VERSION}"
+  done
+
+  cd ${GOPATH}/src/github.com/hyperledger/fabric/common/configtx/tool/configtxgen
+  ${GOROOT}/bin/go build -o /usr/local/bin/configtxgen \
+    -ldflags "-X github.com/hyperledger/fabric/common/configtx/tool/configtxgen/metadata.Version=${PROJECT_VERSION}"
+}
+
+# install fabric-cli
+INSTALL_FABRIC_CLI() {
+  mkdir -p ${GOPATH}/src/github.com/securekey/fabric-examples
+  git clone https://github.com/securekey/fabric-examples ${GOPATH}/src/github.com/securekey/fabric-examples
+  cd ${GOPATH}/src/github.com/securekey/fabric-examples/fabric-cli/cmd/fabric-cli
+  ${GOROOT}/bin/go build -o /usr/local/bin/fabric-cli
+}
+
 # setup Golang
 SETUP_GOLANG() {
   export GOPATH=/opt/gopath
@@ -131,6 +152,19 @@ elif [ $1 = "ca" ]; then
   COMPILE_FABRIC_CA_SERVER
   mkdir -p ${FABRIC_CA_HOME} \
     /var/hyperledger/fabric-ca-server
+
+elif [ $1 = "tools" ]; then
+  INSTALL_PREREQS
+  SETUP_GOLANG
+  CLONE_FABRIC_CA
+  COMPILE_FABRIC_CA_CLIENT
+  CLONE_FABRIC_PEER
+  COMPILE_FABRIC_TOOLS
+  INSTALL_FABRIC_CLI
+
+else
+  echo "Invalid Argument: ${1}. Valid Argument: peer, orderer, ca, tools"
+  exit
 
 fi
 
