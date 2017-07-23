@@ -1,13 +1,16 @@
 # This docker Image is for cross compiling binaries for s390x
 # WARNING: This Image is for testing purposes only
 
-FROM debian:testing-slim
+FROM debian:stretch-slim
 
 # LABELS
 LABEL maintainer="George Bolo <gbolo@linuxctl.com>"
 
+# ARGUMENTS
+ARG   go_version=1.7.6
+
 # ENVIRONMENT VARIABLES
-ENV   GO_VERSION=1.7.6 \
+ENV   GO_VERSION=${go_version} \
       GOROOT=/opt/go \
       GOPATH=/opt/gopath
 
@@ -21,11 +24,13 @@ RUN dpkg --add-architecture s390x
 
 # Grab the updated list of packages
 RUN apt update && apt dist-upgrade -yy
+
+# Install some build essentials
 RUN apt install -yy build-essential clang
-RUN apt-get build-dep -yy -a s390x qemu || apt-get -f install
 RUN apt install -yy gcc-multilib-s390x-linux-gnu binutils-multiarch
 
 RUN DEBIAN_FRONTEND=noninteractive \
+# install compile related packages
     apt-get install -y --no-install-recommends \
         libbz2-dev:s390x \
         liblzo2-dev:s390x \
@@ -38,13 +43,19 @@ RUN DEBIAN_FRONTEND=noninteractive \
         libtool:s390x \
         libtool \
         libltdl-dev \
+# non-compile related packages
+        ca-certificates \
         curl \
-        git
+        git \
+        openssl \
+        vim && \
+# cleanup
+  rm -rf /var/lib/apt/lists/*
 
 # Install golang
 RUN mkdir -p ${GOPATH} && \
     curl -sL -o /tmp/go.tgz https://storage.googleapis.com/golang/go${GO_VERSION}.linux-amd64.tar.gz && \
-    tar -xvf /tmp/go.tgz -C /opt/ && \
+    tar -xf /tmp/go.tgz -C /opt/ && \
     rm -rf /tmp/go.tgz
 
 ENTRYPOINT ["/usr/bin/bash"]

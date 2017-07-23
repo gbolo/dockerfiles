@@ -4,10 +4,8 @@ This container is intended for cross compiling binaries for s390x Arch.
 
 # Example Usage
 ```
-# Run container
+# Run container interactively
 docker run -it --rm gbolo/cross-compile:s390x
-root@aca90b042dc8:/# go version
-go version go1.7.6 linux/amd64
 
 # Get source code
 root@aca90b042dc8:/# mkdir -p ${GOPATH}/src/github.com/hyperledger/fabric
