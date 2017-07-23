@@ -108,7 +108,7 @@ SETUP_GOLANG() {
   export GOROOT=/opt/go
   mkdir -p ${GOPATH}
   curl -sL -o /tmp/go.tgz https://storage.googleapis.com/golang/go${GO_VERSION}.linux-amd64.tar.gz
-  tar -xvf /tmp/go.tgz -C /opt/
+  tar -xf /tmp/go.tgz -C /opt/
   rm -rf /tmp/go.tgz
 }
 
