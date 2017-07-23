@@ -1,0 +1,64 @@
+{
+  "signing": {
+
+    "default": {
+      "expiry": "4380h"
+    },
+
+    "profiles": {
+
+      "intermediate": {
+        "usages": [
+          "cert sign",
+          "crl sign"
+        ],
+        "expiry": "87600h",
+        "ca_constraint": {
+          "is_ca": true
+        }
+      },
+
+      "last_intermediate": {
+        "usages": [
+          "cert sign",
+          "crl sign"
+        ],
+        "expiry": "87600h",
+        "ca_constraint": {
+          "is_ca": true,
+          "max_path_len": 0,
+          "max_path_len_zero": true
+        }
+      },
+
+      "client-server": {
+        "usages": [
+          "signing",
+          "key encipherment",
+          "client auth",
+          "server auth"
+        ],
+        "expiry": "8760h"
+      },
+
+      "client": {
+        "usages": [
+          "signing",
+          "key encipherment",
+          "client auth"
+        ],
+        "expiry": "8760h"
+      },
+
+      "server": {
+        "usages": [
+          "signing",
+          "key encipherment",
+          "server auth"
+        ],
+        "expiry": "8760h"
+      }
+
+    }
+  }
+}
