@@ -10,13 +10,14 @@ REGISTER_USER() {
     --id.secret testing \
     --id.type ${USER_TYPE} \
     --id.affiliation ${USER_AFF} \
-    --url http://${FABRIC_CA_FQDN}:7054
+    --url https://${FABRIC_CA_FQDN}:7054
 
   sleep 0.25
 }
 
-
-fabric-ca-client enroll --url http://gbolo:testing@${FABRIC_CA_FQDN}:7054
+echo ">>>> ENROLLING ADMIN <<<<"
+fabric-ca-client enroll --url https://gbolo:testing@${FABRIC_CA_FQDN}:7054
+cp -rp /etc/hyperledger/fabric-ca-server/msp/signcerts /etc/hyperledger/fabric-ca-server/msp/admincerts
 
 REGISTER_USER testclient client
 REGISTER_USER peer0 peer
