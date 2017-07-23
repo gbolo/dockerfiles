@@ -1,11 +1,11 @@
-# Copyright IBM Corp. All Rights Reserved.
+################################################################################
 #
-# SPDX-License-Identifier: Apache-2.0
+#   simple docker compose for hyperledger fabric
+#   intended to be used for testing pkcs11 with gbolo/fabric-* docker images
 #
-version: '2'
+################################################################################
 
-networks:
-  fabric:
+version: '2'
 
 services:
 
@@ -14,8 +14,14 @@ services:
     image: gbolo/fabric-ca:1.0.0-softhsm
     volumes:
       - ./files/config/ca-server-1.0.0-pkcs11.yaml:/etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml:ro
+      - ./files/tls/certs:/data/tls:ro
     environment:
       - FABRIC_CA_SERVER_DEBUG=false
+      # TLS
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/data/tls/server_wild_fabric.linuxctl.com.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/data/tls/server_wild_fabric.linuxctl.com-key.pem
+      # BCCSP
       - FABRIC_CA_SERVER_BCCSP_DEFAULT=PKCS11
       - FABRIC_CA_SERVER_BCCSP_PKCS11_LIBRARY=/usr/lib/softhsm/libsofthsm2.so
       - FABRIC_CA_SERVER_BCCSP_PKCS11_LABEL=ForFabric
@@ -25,53 +31,203 @@ services:
     networks:
       - fabric
 
+  caOrderer.fabric.linuxctl.com:
+    container_name: fabric-caOrderer
+    image: gbolo/fabric-ca:1.0.0-softhsm
+    volumes:
+      - ./files/config/ca-server-1.0.0-pkcs11.yaml:/etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml:ro
+      - ./files/tls/certs:/data/tls:ro
+    environment:
+      - FABRIC_CA_SERVER_DEBUG=false
+      # TLS
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/data/tls/server_wild_fabric.linuxctl.com.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/data/tls/server_wild_fabric.linuxctl.com-key.pem
+      # BCCSP
+      - FABRIC_CA_SERVER_BCCSP_DEFAULT=PKCS11
+      - FABRIC_CA_SERVER_BCCSP_PKCS11_LIBRARY=/usr/lib/softhsm/libsofthsm2.so
+      - FABRIC_CA_SERVER_BCCSP_PKCS11_LABEL=ForFabric
+      - FABRIC_CA_SERVER_BCCSP_PKCS11_PIN=98765432
+      - FABRIC_CA_SERVER_BCCSP_PKCS11_SENSITIVEKEYS=true
+      - FABRIC_CA_SERVER_BCCSP_PKCS11_SOFTWAREVERIFY=true
+      - FABRIC_CA_SERVER_CSR_CN=caOrderer.fabric.linuxctl.com
+      - FABRIC_CA_SERVER_CSR_HOSTS=caOrderer.fabric.linuxctl.com
+    networks:
+      - fabric
+
   ca-client-register:
     container_name: fabric-ca-client
     image: gbolo/fabric-ca:1.0.0-softhsm
+    environment:
+      - FABRIC_CA_CLIENT_TLS_CERTFILES=/data/tls/ca_root.pem
     volumes:
       - ./files/bin/register_users.sh:/tmp/register_users.sh
+      - ./files/tls/certs:/data/tls:ro
+      - adminOrg1MSP:/etc/hyperledger/fabric-ca-server/msp
     command: /bin/bash -c 'sleep 3; sh /tmp/register_users.sh ca.fabric.linuxctl.com'
     depends_on:
       - ca.fabric.linuxctl.com
     networks:
       - fabric
 
+  caOrderer-client-register:
+    container_name: fabric-ca-clientOrderer
+    image: gbolo/fabric-ca:1.0.0-softhsm
+    environment:
+      - FABRIC_CA_CLIENT_TLS_CERTFILES=/data/tls/ca_root.pem
+    volumes:
+      - ./files/bin/register_users.sh:/tmp/register_users.sh
+      - ./files/tls/certs:/data/tls:ro
+      - adminOrdererOrg1MSP:/etc/hyperledger/fabric-ca-server/msp
+    command: /bin/bash -c 'sleep 3; sh /tmp/register_users.sh caOrderer.fabric.linuxctl.com'
+    depends_on:
+      - caOrderer.fabric.linuxctl.com
+    networks:
+      - fabric
+
+  fabric-tools:
+    container_name: fabric-tools
+    image: gbolo/fabric-tools:1.0.0
+    environment:
+      - FABRIC_CFG_PATH=/etc/hyperledger/fabric
+      - CORE_PEER_BCCSP_DEFAULT=SW
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_ID=cli
+      - CORE_PEER_LOCALMSPID=Org1MSP
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/data/tls/server_wild_fabric.linuxctl.com.pem
+      - CORE_PEER_TLS_KEY_FILE=/data/tls/server_wild_fabric.linuxctl.com-key.pem
+      - CORE_PEER_TLS_ROOTCERT_FILE=/data/tls/ca_root.pem
+    volumes:
+      - peer0MSP:/data/peer0MSP
+      - peer1MSP:/data/peer1MSP
+      - orderer0MSP:/data/orderer0MSP
+      - adminOrg1MSP:/data/adminOrg1MSP
+      - adminOrdererOrg1MSP:/data/adminOrdererOrg1MSP
+      - channelArtifacts:/data/channel-artifacts
+      - ./files/config/configtx-1.0.0.yaml:/data/configtx.yaml:ro
+      - ./files/config/fabric-cli-1.0.0.yaml:/data/fabric-cli.yaml:ro
+      - ./files/config/core-1.0.0.yaml:/etc/hyperledger/fabric/core.yaml:ro
+      - ./files/bin/create_channel_tx.sh:/data/create_channel_tx.sh
+      - ./files/bin/run_test.sh:/data/run_test.sh
+      - ./files/tls/certs:/data/tls:ro
+      # - ./files/bin/cc_ex2.go:/gopath/src/github.com/hyperledger/fabric/examples/chaincode/go/chaincode_example02/chaincode_example02.go
+    command: /bin/bash -c 'echo "Running Test in 20 seconds..."; sleep 20; ./data/run_test.sh'
+    networks:
+      - fabric
+
   peer0.fabric.linuxctl.com:
     container_name: fabric-peer0
-    image: gbolo/fabric-peer:1.0.0-softhsm
+    extends:
+      file:  defaults.yaml
+      service: peer-base
     volumes:
-      - /var/run/:/host/var/run/
-      - ./files/config/ca-client-1.0.0-pkcs11.yaml:/etc/hyperledger/fabric/client/fabric-ca-client-config.yaml
-      - ./files/config/core-1.0.0-pkcs11.yaml:/etc/hyperledger/fabric/core.yaml:ro
+      - peer0MSP:/etc/hyperledger/fabric/msp
+      - adminOrg1MSP:/data/adminOrg1MSP
+      - ./files/bin/entrypoint.sh:/usr/local/bin/entrypoint.sh
+      - adminOrdererOrg1MSP:/data/adminOrdererOrg1MSP
+      - channelArtifacts:/data/channelArtifacts
     environment:
       # FOR ENROLLMENT
-      - FABRIC_CA_CLIENT_URL=http://peer0:testing@ca.fabric.linuxctl.com:7054
+      - FABRIC_CA_CLIENT_URL=https://peer0:testing@ca.fabric.linuxctl.com:7054
       - FABRIC_CA_CLIENT_CSR_CN=peer0
       - FABRIC_CA_CLIENT_CSR_HOSTS=peer0.fabric.linuxctl.com
+      - FABRIC_CA_CLIENT_TLS_CERTFILES=/data/tls/ca_root.pem
+      # DAEMON SPECIFIC OPTIONS
+      - CORE_PEER_ID=peer0.fabric.linuxctl.com
+      - CORE_PEER_ADDRESS=peer0.fabric.linuxctl.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.fabric.linuxctl.com:7051
+      - CORE_PEER_LOCALMSPID=Org1MSP
+      - CORE_PEER_GOSSIP_ORGLEADER=true
+    command: /bin/bash -c 'sleep 8; ./usr/local/bin/entrypoint.sh peer node start --peer-defaultchain=false'
+    networks:
+      - fabric
+
+  peer1.fabric.linuxctl.com:
+    container_name: fabric-peer1
+    extends:
+      file:  defaults.yaml
+      service: peer-base
+    volumes:
+      - peer1MSP:/etc/hyperledger/fabric/msp
+      - adminOrg1MSP:/data/adminOrg1MSP
+      - ./files/bin/entrypoint.sh:/usr/local/bin/entrypoint.sh
+      - adminOrdererOrg1MSP:/data/adminOrdererOrg1MSP
+    environment:
+      # FOR ENROLLMENT
+      - FABRIC_CA_CLIENT_URL=https://peer1:testing@ca.fabric.linuxctl.com:7054
+      - FABRIC_CA_CLIENT_CSR_CN=peer1
+      - FABRIC_CA_CLIENT_CSR_HOSTS=peer1.fabric.linuxctl.com
+      - FABRIC_CA_CLIENT_TLS_CERTFILES=/data/tls/ca_root.pem
+      # DAEMON SPECIFIC OPTIONS
+      - CORE_PEER_ID=peer1.fabric.linuxctl.com
+      - CORE_PEER_ADDRESS=peer1.fabric.linuxctl.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.fabric.linuxctl.com:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.fabric.linuxctl.com:7051
+      - CORE_PEER_LOCALMSPID=Org1MSP
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+    command: /bin/bash -c 'sleep 10; ./usr/local/bin/entrypoint.sh peer node start --peer-defaultchain=false'
+    networks:
+      - fabric
+
+  orderer0.fabric.linuxctl.com:
+    container_name: fabric-orderer0
+    image: gbolo/fabric-orderer:1.0.0-softhsm
+    volumes:
+      - ./files/config/orderer-1.0.0-pkcs11.yaml:/etc/hyperledger/fabric/orderer.yaml:ro
+      - ./files/config/configtx-1.0.0.yaml:/etc/hyperledger/fabric/configtx.yaml:ro
+      - ./files/config/ca-client-1.0.0-pkcs11.yaml:/etc/hyperledger/fabric/client/fabric-ca-client-config.yaml
+      - ./files/tls/certs:/data/tls:ro
+      - ./files/bin/entrypoint.sh:/usr/local/bin/entrypoint.sh
+      - adminOrg1MSP:/data/adminOrg1MSP
+      - adminOrdererOrg1MSP:/data/adminOrdererOrg1MSP
+      - orderer0MSP:/data/orderer0MSP
+    environment:
+      # FOR ENROLLMENT
+      - FABRIC_CA_CLIENT_MSPDIR=/data/orderer0MSP
+      - FABRIC_CA_CLIENT_URL=https://orderer0:testing@caOrderer.fabric.linuxctl.com:7054
+      - FABRIC_CA_CLIENT_CSR_CN=orderer0
+      - FABRIC_CA_CLIENT_CSR_HOSTS=orderer0.fabric.linuxctl.com
+      - FABRIC_CA_CLIENT_TLS_CERTFILES=/data/tls/ca_root.pem
       - FABRIC_CA_CLIENT_BCCSP_DEFAULT=PKCS11
       - FABRIC_CA_CLIENT_BCCSP_PKCS11_LIBRARY=/usr/lib/softhsm/libsofthsm2.so
       - FABRIC_CA_CLIENT_BCCSP_PKCS11_LABEL=ForFabric
       - FABRIC_CA_CLIENT_BCCSP_PKCS11_PIN=98765432
       - FABRIC_CA_CLIENT_BCCSP_PKCS11_SENSITIVEKEYS=false
       - FABRIC_CA_CLIENT_BCCSP_PKCS11_SOFTWAREVERIFY=false
-      # FOR PEER DAEMON BCCSP
-      - CORE_PEER_BCCSP_DEFAULT=PKCS11
-      - CORE_PEER_BCCSP_PKCS11_LIBRARY=/usr/lib/softhsm/libsofthsm2.so
-      - CORE_PEER_BCCSP_PKCS11_LABEL=ForFabric
-      - CORE_PEER_BCCSP_PKCS11_PIN=98765432
-      # these options are broken...
-      # - CORE_PEER_BCCSP_PKCS11_SENSITIVEKEYS=false
-      # - CORE_PEER_BCCSP_PKCS11_SOFTWAREVERIFY=false
-      # REGULAR PEER DAEMON OPTIONS
-      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_fabric
-      - CORE_LOGGING_LEVEL=INFO
-      - CORE_PEER_TLS_ENABLED=false
-      - CORE_PEER_GOSSIP_USELEADERELECTION=true
-      - CORE_PEER_ID=peer0.fabric.linuxctl.com
-      - CORE_PEER_ADDRESS=peer0.fabric.linuxctl.com:7051
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.fabric.linuxctl.com:7051
-      - CORE_PEER_LOCALMSPID=Org1MSP
-    command: /bin/bash -c 'sleep 10; ./usr/local/bin/entrypoint.sh peer node start --peer-defaultchain=false'
+      # DAEMON BCCSP OPTIONS
+      - ORDERER_GENERAL_BCCSP_DEFAULT=PKCS11
+      - ORDERER_GENERAL_BCCSP_PKCS11_LIBRARY=/usr/lib/softhsm/libsofthsm2.so
+      - ORDERER_GENERAL_BCCSP_PKCS11_LABEL=ForFabric
+      - ORDERER_GENERAL_BCCSP_PKCS11_PIN=98765432
+      # DAEMON SPECIFIC OPTIONS
+      - ORDERER_GENERAL_LOCALMSPDIR=/data/orderer0MSP
+      - ORDERER_GENERAL_LOGLEVEL=info
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_GENESISMETHOD=provisional
+      - ORDERER_GENERAL_GENESISPROFILE=linuxctlOrdererGenesis
+      # TLS OPTIONS
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/data/tls/server_wild_fabric.linuxctl.com.pem
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/data/tls/server_wild_fabric.linuxctl.com-key.pem
+      # THIS IS BROKEN: * 'General.TLS.RootCAs': source data must be an array or slice, got string
+      # - ORDERER_GENERAL_TLS_ROOTCAS=/data/tls/ca_root.pem
+    command: /bin/bash -c 'sleep 10; ./usr/local/bin/entrypoint.sh orderer start'
     networks:
       - fabric
+
+networks:
+  fabric:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.199.199.0/24
+
+volumes:
+  peer0MSP:
+  peer1MSP:
+  orderer0MSP:
+  adminOrg1MSP:
+  adminOrdererOrg1MSP:
+  channelArtifacts:
