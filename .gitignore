@@ -2,3 +2,6 @@
 
 sensu/**/bin/*
 !**/.gitkeep
+
+hyperledger-fabric/softhsm/compose/files/bin/fabric-*
+**/private/*
