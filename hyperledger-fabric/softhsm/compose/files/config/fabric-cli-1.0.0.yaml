@@ -1,0 +1,82 @@
+#
+# Copyright SecureKey Technologies Inc. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+client:
+ tls:
+  enabled: true
+
+ security:
+  enabled: true
+  hashAlgorithm: "SHA2"
+  level: 256
+
+ tcert:
+  batch:
+    size: 200
+
+ logging:
+  level: info
+
+ keystore:
+  path: /tmp/msp
+
+ cryptoconfig:
+  path: "$GOPATH/src/github.com/securekey/fabric-examples/fabric-cli/cmd/fabric-cli/fixtures/channel/crypto-config"
+
+ connection:
+   timeout:
+    peer:
+     endorser: 3s
+     eventHub: 3s
+     eventReg: 3s
+    orderer: 3s
+
+# network provides a static definition of a Hyperledger Fabric network
+ network:
+  # list of ordering service nodes
+  orderers:
+   # orderer name
+   orderer0:
+    host: "orderer0.fabric.linuxctl.com"
+    port: 7050
+    tls:
+     # Certificate location absolute path
+     certificate: "/data/tls/ca_root.pem"
+     # For testing only: overrides the virtual host name of the authority
+     #serverHostOverride: "orderer.example.com"
+  # ap of member organizations forming the network
+  organizations:
+    # Org1 name
+    org1:
+      # Membership Service Provider ID for this organization
+      mspID: "Org1MSP"
+      # CA config defines the fabric-ca instance that issues identities for this org
+      ca:
+       # TLS secured connections with the CA
+       tlsEnabled: true
+       # CA name
+       name: "ca-org1"
+       # CA URL. Note: https prefix required for TLS
+       serverURL: "https://ca.fabric.linuxctl.com:7054"
+       # Configuration for mutual TLS with the CA
+       tls:
+        # Comma-Separated list of paths
+        certfiles : "/data/tls/ca_root.pem"
+        client:
+         keyfile: "$GOPATH/src/github.com/securekey/fabric-examples/fabric-cli/cmd/fabric-cli/fixtures/tls/fabricca/client/client_client1-key.pem"
+         certfile: "$GOPATH/src/github.com/securekey/fabric-examples/fabric-cli/cmd/fabric-cli/fixtures/tls/fabricca/client/client_client1.pem"
+      # Peers that are part of this organization
+      peers:
+       # Peer name
+       peer0:
+        host: "peer0.fabric.linuxctl.com"
+        port: 7051
+        eventHost: "peer0.fabric.linuxctl.com"
+        eventPort: 7053
+        primary: true
+        tls:
+         # Certificate location absolute path
+         certificate: "/data/tls/ca_root.pem"
+         #serverHostOverride: "peer0.org1.example.com"
