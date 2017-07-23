@@ -1,0 +1,24 @@
+unchanged:
+--- a/msp/mspimpl.go
++++ b/msp/mspimpl.go
+@@ -493,6 +493,7 @@ func (msp *bccspmsp) SatisfiesPrincipal(id Identity, principal *m.MSPPrincipal)
+ 			// in the case of admin, we check that the
+ 			// id is exactly one of our admins
+ 			for _, admincert := range msp.admins {
++				mspLogger.Criticalf("%+v gbolo", admincert.(*identity).cert.Raw)
+ 				if bytes.Equal(id.(*identity).cert.Raw, admincert.(*identity).cert.Raw) {
+ 					// we do not need to check whether the admin is a valid identity
+ 					// according to this MSP, since we already check this at Setup time
+only in patch2:
+unchanged:
+--- a/msp/configbuilder.go
++++ b/msp/configbuilder.go
+@@ -270,6 +270,8 @@ func getMspConfig(dir string, ID string, sigid *msp.SigningIdentityInfo) (*msp.M
+ 		TlsIntermediateCerts:          tlsIntermediateCerts,
+ 	}
+ 
++	mspLogger.Criticalf("gbolo fmspconf-> %v", fmspconf)
++
+ 	fmpsjs, _ := proto.Marshal(fmspconf)
+ 
+ 	mspconf := &msp.MSPConfig{Config: fmpsjs, Type: int32(FABRIC)}

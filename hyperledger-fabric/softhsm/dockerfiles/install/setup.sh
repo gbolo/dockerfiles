@@ -10,6 +10,9 @@ if [ $# -eq 0 ]
   then
     echo "Must Supply 1 argument: peer, orderer, ca, tools"
     exit
+  else
+    build_type="${1}"
+    apply_patch="${2}"
 fi
 
 
@@ -57,8 +60,13 @@ COMPILE_FABRIC_CA_SERVER() {
 CLONE_FABRIC_PEER() {
   mkdir -p ${GOPATH}/src/github.com/hyperledger/fabric
   git clone https://github.com/hyperledger/fabric ${GOPATH}/src/github.com/hyperledger/fabric
-  cd ${GOPATH}/src/github.com/hyperledger/fabric/peer
+  cd ${GOPATH}/src/github.com/hyperledger/fabric
   git checkout ${FABRIC_TAG}
+
+  # do a patch if second arg is patch
+  if [ "${apply_patch}" = "patch" ]; then
+    patch -f -p1 < /tmp/install/fabric.patch
+  fi
 }
 
 # compile fabric-peer
@@ -122,7 +130,7 @@ CLEANUP() {
   rm -rf /opt/go*
 }
 
-if [ $1 = "peer" ]; then
+if [ "${build_type}" = "peer" ]; then
   INSTALL_PREREQS
   SETUP_GOLANG
   CLONE_FABRIC_CA
@@ -134,7 +142,7 @@ if [ $1 = "peer" ]; then
     /var/hyperledger/production
   cp -rp ${GOPATH}/src/github.com/hyperledger/fabric/sampleconfig/core.yaml ${FABRIC_CFG_PATH}/
 
-elif [ $1 = "orderer" ]; then
+elif [ "${build_type}" = "orderer" ]; then
   INSTALL_PREREQS
   SETUP_GOLANG
   CLONE_FABRIC_CA
@@ -144,7 +152,7 @@ elif [ $1 = "orderer" ]; then
   mkdir -p ${FABRIC_CFG_PATH}
   cp -rp ${GOPATH}/src/github.com/hyperledger/fabric/sampleconfig/orderer.yaml ${FABRIC_CFG_PATH}/
 
-elif [ $1 = "ca" ]; then
+elif [ "${build_type}" = "ca" ]; then
   INSTALL_PREREQS
   SETUP_GOLANG
   CLONE_FABRIC_CA
@@ -153,7 +161,7 @@ elif [ $1 = "ca" ]; then
   mkdir -p ${FABRIC_CA_HOME} \
     /var/hyperledger/fabric-ca-server
 
-elif [ $1 = "tools" ]; then
+elif [ "${build_type}" = "tools" ]; then
   INSTALL_PREREQS
   SETUP_GOLANG
   CLONE_FABRIC_CA
@@ -162,6 +170,7 @@ elif [ $1 = "tools" ]; then
   COMPILE_FABRIC_PEER
   COMPILE_FABRIC_TOOLS
   INSTALL_FABRIC_CLI
+  apt-get install -y tree openssl curl net-tools procps
 
 else
   echo "Invalid Argument: ${1}. Valid Argument: peer, orderer, ca, tools"
@@ -173,4 +182,8 @@ fi
 cp /tmp/install/entrypoint.sh /usr/local/bin/
 chmod +x /usr/local/bin/*
 SETUP_SOFTHSM
-CLEANUP
+if [ $1 != "tools" ]; then
+  CLEANUP
+else
+  rm -rf /var/lib/apt/lists/*
+fi

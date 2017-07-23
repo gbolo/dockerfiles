@@ -28,9 +28,4 @@ START_DAEMON() {
 
 
 ENROLL_CLIENT
-
-# temp hack...
-rm -rf ${FABRIC_CA_CLIENT_MSPDIR}/admincerts
-cp -rp ${FABRIC_CA_CLIENT_MSPDIR}/signcerts ${FABRIC_CA_CLIENT_MSPDIR}/admincerts
-
 START_DAEMON "$@"
