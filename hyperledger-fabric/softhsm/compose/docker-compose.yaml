@@ -114,6 +114,10 @@ services:
       - ./files/tls/certs:/data/tls:ro
       # - ./files/bin/cc_ex2.go:/gopath/src/github.com/hyperledger/fabric/examples/chaincode/go/chaincode_example02/chaincode_example02.go
     command: /bin/bash -c 'echo "Running Test in 20 seconds..."; sleep 20; ./data/run_test.sh'
+    depends_on:
+      - peer0.fabric.linuxctl.com
+      - peer1.fabric.linuxctl.com
+      - orderer0.fabric.linuxctl.com
     networks:
       - fabric
 
@@ -141,6 +145,8 @@ services:
       - CORE_PEER_LOCALMSPID=Org1MSP
       - CORE_PEER_GOSSIP_ORGLEADER=true
     command: /bin/bash -c 'sleep 8; ./usr/local/bin/entrypoint.sh peer node start --peer-defaultchain=false'
+    depends_on:
+      - ca-client-register
     networks:
       - fabric
 
@@ -167,7 +173,9 @@ services:
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.fabric.linuxctl.com:7051
       - CORE_PEER_LOCALMSPID=Org1MSP
       - CORE_PEER_GOSSIP_ORGLEADER=false
-    command: /bin/bash -c 'sleep 10; ./usr/local/bin/entrypoint.sh peer node start --peer-defaultchain=false'
+    command: /bin/bash -c 'sleep 8; ./usr/local/bin/entrypoint.sh peer node start --peer-defaultchain=false'
+    depends_on:
+      - ca-client-register
     networks:
       - fabric
 
@@ -213,7 +221,9 @@ services:
       - ORDERER_GENERAL_TLS_PRIVATEKEY=/data/tls/server_wild_fabric.linuxctl.com-key.pem
       # THIS IS BROKEN: * 'General.TLS.RootCAs': source data must be an array or slice, got string
       # - ORDERER_GENERAL_TLS_ROOTCAS=/data/tls/ca_root.pem
-    command: /bin/bash -c 'sleep 10; ./usr/local/bin/entrypoint.sh orderer start'
+    command: /bin/bash -c 'sleep 8; ./usr/local/bin/entrypoint.sh orderer start'
+    depends_on:
+      - caOrderer-client-register
     networks:
       - fabric
 
