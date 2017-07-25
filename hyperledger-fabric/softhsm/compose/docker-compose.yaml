@@ -11,49 +11,21 @@ services:
 
   ca.fabric.linuxctl.com:
     container_name: fabric-ca
-    image: gbolo/fabric-ca:1.0.0-softhsm
-    volumes:
-      - ./files/config/ca-server-1.0.0-pkcs11.yaml:/etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml:ro
-      - ./files/tls/certs:/data/tls:ro
+    extends:
+      file:  defaults.yaml
+      service: ca-base
     environment:
-      - FABRIC_CA_SERVER_DEBUG=false
-      # TLS
-      - FABRIC_CA_SERVER_TLS_ENABLED=true
-      - FABRIC_CA_SERVER_TLS_CERTFILE=/data/tls/server_wild_fabric.linuxctl.com.pem
-      - FABRIC_CA_SERVER_TLS_KEYFILE=/data/tls/server_wild_fabric.linuxctl.com-key.pem
-      # BCCSP
-      - FABRIC_CA_SERVER_BCCSP_DEFAULT=PKCS11
-      - FABRIC_CA_SERVER_BCCSP_PKCS11_LIBRARY=/usr/lib/softhsm/libsofthsm2.so
-      - FABRIC_CA_SERVER_BCCSP_PKCS11_LABEL=ForFabric
-      - FABRIC_CA_SERVER_BCCSP_PKCS11_PIN=98765432
-      - FABRIC_CA_SERVER_BCCSP_PKCS11_SENSITIVEKEYS=true
-      - FABRIC_CA_SERVER_BCCSP_PKCS11_SOFTWAREVERIFY=true
-    networks:
-      - fabric
+      - FABRIC_CA_SERVER_CSR_CN=ca.fabric.linuxctl.com
+      - FABRIC_CA_SERVER_CSR_HOSTS=ca.fabric.linuxctl.com
 
   caOrderer.fabric.linuxctl.com:
     container_name: fabric-caOrderer
-    image: gbolo/fabric-ca:1.0.0-softhsm
-    volumes:
-      - ./files/config/ca-server-1.0.0-pkcs11.yaml:/etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml:ro
-      - ./files/tls/certs:/data/tls:ro
+    extends:
+      file:  defaults.yaml
+      service: ca-base
     environment:
-      - FABRIC_CA_SERVER_DEBUG=false
-      # TLS
-      - FABRIC_CA_SERVER_TLS_ENABLED=true
-      - FABRIC_CA_SERVER_TLS_CERTFILE=/data/tls/server_wild_fabric.linuxctl.com.pem
-      - FABRIC_CA_SERVER_TLS_KEYFILE=/data/tls/server_wild_fabric.linuxctl.com-key.pem
-      # BCCSP
-      - FABRIC_CA_SERVER_BCCSP_DEFAULT=PKCS11
-      - FABRIC_CA_SERVER_BCCSP_PKCS11_LIBRARY=/usr/lib/softhsm/libsofthsm2.so
-      - FABRIC_CA_SERVER_BCCSP_PKCS11_LABEL=ForFabric
-      - FABRIC_CA_SERVER_BCCSP_PKCS11_PIN=98765432
-      - FABRIC_CA_SERVER_BCCSP_PKCS11_SENSITIVEKEYS=true
-      - FABRIC_CA_SERVER_BCCSP_PKCS11_SOFTWAREVERIFY=true
       - FABRIC_CA_SERVER_CSR_CN=caOrderer.fabric.linuxctl.com
       - FABRIC_CA_SERVER_CSR_HOSTS=caOrderer.fabric.linuxctl.com
-    networks:
-      - fabric
 
   ca-client-register:
     container_name: fabric-ca-client

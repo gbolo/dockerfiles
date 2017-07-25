@@ -7,37 +7,7 @@
 
 version: '2'
 
-networks:
-  fabric:
-
 services:
-
-  ca.fabric.linuxctl.com:
-    container_name: fabric-ca
-    image: gbolo/fabric-ca:1.0.0-softhsm
-    volumes:
-      - ./files/config/ca-server-1.0.0-pkcs11.yaml:/etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml:ro
-    environment:
-      - FABRIC_CA_SERVER_DEBUG=false
-      - FABRIC_CA_SERVER_BCCSP_DEFAULT=PKCS11
-      - FABRIC_CA_SERVER_BCCSP_PKCS11_LIBRARY=/usr/lib/softhsm/libsofthsm2.so
-      - FABRIC_CA_SERVER_BCCSP_PKCS11_LABEL=ForFabric
-      - FABRIC_CA_SERVER_BCCSP_PKCS11_PIN=98765432
-      - FABRIC_CA_SERVER_BCCSP_PKCS11_SENSITIVEKEYS=true
-      - FABRIC_CA_SERVER_BCCSP_PKCS11_SOFTWAREVERIFY=true
-    networks:
-      - fabric
-
-  ca-client-register:
-    container_name: fabric-ca-client
-    image: gbolo/fabric-ca:1.0.0-softhsm
-    volumes:
-      - ./files/bin/register_users.sh:/tmp/register_users.sh
-    command: /bin/bash -c 'sleep 3; sh /tmp/register_users.sh ca.fabric.linuxctl.com'
-    depends_on:
-      - ca.fabric.linuxctl.com
-    networks:
-      - fabric
 
   peer-base:
     image: gbolo/fabric-peer:1.0.0-softhsm
@@ -73,6 +43,26 @@ services:
       - CORE_PEER_TLS_CERT_FILE=/data/tls/server_wild_fabric.linuxctl.com.pem
       - CORE_PEER_TLS_KEY_FILE=/data/tls/server_wild_fabric.linuxctl.com-key.pem
       - CORE_PEER_TLS_ROOTCERT_FILE=/data/tls/ca_root.pem
-    command: /bin/bash -c 'sleep 10; ./usr/local/bin/entrypoint.sh peer node start --peer-defaultchain=false'
+    networks:
+      - fabric
+
+  ca-base:
+    image: gbolo/fabric-ca:1.0.0-softhsm
+    volumes:
+      - ./files/config/ca-server-1.0.0-pkcs11.yaml:/etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml:ro
+      - ./files/tls/certs:/data/tls:ro
+    environment:
+      - FABRIC_CA_SERVER_DEBUG=false
+      # TLS
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/data/tls/server_wild_fabric.linuxctl.com.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/data/tls/server_wild_fabric.linuxctl.com-key.pem
+      # BCCSP
+      - FABRIC_CA_SERVER_BCCSP_DEFAULT=PKCS11
+      - FABRIC_CA_SERVER_BCCSP_PKCS11_LIBRARY=/usr/lib/softhsm/libsofthsm2.so
+      - FABRIC_CA_SERVER_BCCSP_PKCS11_LABEL=ForFabric
+      - FABRIC_CA_SERVER_BCCSP_PKCS11_PIN=98765432
+      - FABRIC_CA_SERVER_BCCSP_PKCS11_SENSITIVEKEYS=true
+      - FABRIC_CA_SERVER_BCCSP_PKCS11_SOFTWAREVERIFY=true
     networks:
       - fabric
