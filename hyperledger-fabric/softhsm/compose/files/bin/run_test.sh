@@ -3,9 +3,9 @@
 function VERIFY_RESULT {
 	if [ $1 -ne 0 ] ; then
 		echo "!!!!!!!!!!!!!!! "$2" !!!!!!!!!!!!!!!!"
-    BROADCAST "FATAL ERROR - EXITING"
+		BROADCAST "FATAL ERROR - EXITING"
 		echo
-   	exit 1
+		exit 1
 	fi
 }
 
@@ -32,11 +32,11 @@ function SET_PEER_ENV {
 	local LOG_LEVEL=${2:-DEBUG}
 
 	export CORE_LOGGING_LEVEL=${LOG_LEVEL}
-  export CORE_PEER_LOCALMSPID="Org1MSP"
-  export CORE_PEER_TLS_ENABLED=true
-  export CORE_PEER_TLS_ROOTCERT_FILE=/data/tls/ca_root.pem
-  export CORE_PEER_MSPCONFIGPATH=/data/adminOrg1MSP
-  export CORE_PEER_ADDRESS=${PEER_NAME}.${PEER_DOMAIN}:7051
+	export CORE_PEER_LOCALMSPID="Org1MSP"
+	export CORE_PEER_TLS_ENABLED=true
+	export CORE_PEER_TLS_ROOTCERT_FILE=/data/tls/ca_root.pem
+	export CORE_PEER_MSPCONFIGPATH=/data/adminOrg1MSP
+	export CORE_PEER_ADDRESS=${PEER_NAME}.${PEER_DOMAIN}:7051
 
 	if [ "${LOG_LEVEL}" = "DEBUG"  ]; then
 		BROADCAST "SETTING PEER ENV"
@@ -45,25 +45,25 @@ function SET_PEER_ENV {
 }
 
 function CREATE_CHANNEL {
-  local CHANNEL_NAME=$1
+	local CHANNEL_NAME=$1
 
-  BROADCAST "CREATING CHANNEL: ${CHANNEL_NAME}"
+	BROADCAST "CREATING CHANNEL: ${CHANNEL_NAME}"
 
 	$PEER_BIN channel create -o ${ORDERER_HOST}:7050 -c ${CHANNEL_NAME} \
-  -f ${CHANNEL_BASEDIR}/${CHANNEL_NAME}.tx --tls ${CORE_PEER_TLS_ENABLED} --cafile ${ORDERER_CA_CERT} >&log.txt
+	-f ${CHANNEL_BASEDIR}/${CHANNEL_NAME}.tx --tls ${CORE_PEER_TLS_ENABLED} --cafile ${ORDERER_CA_CERT} >&log.txt
 
 	res=$?
 	cat log.txt
 	# DISABLE FOR NOW, WITH KAFKA ENABLED YOU GET AN ERROR BUT IT ACTUALLY WORKS
 	VERIFY_RESULT $res "Channel creation failed"
 	BROADCAST_RESULT "Channel ${CHANNEL_NAME} was created successfully"
-  sleep 2
+	sleep 2
 }
 
 function JOIN_CHANNEL {
 	local CHANNEL_NAME=$1
 
-  BROADCAST "${CORE_PEER_ADDRESS} JOINING CHANNEL: ${CHANNEL_NAME}"
+	BROADCAST "${CORE_PEER_ADDRESS} JOINING CHANNEL: ${CHANNEL_NAME}"
 
 	$PEER_BIN channel join -b ${CHANNEL_NAME}.block  >&log.txt
 
@@ -78,8 +78,8 @@ function JOIN_CHANNEL {
 		COUNTER=0
 	fi
 
-  VERIFY_RESULT $res "After $MAX_RETRY attempts, ${CORE_PEER_ADDRESS} has failed to Join the Channel"
-  sleep 1
+	VERIFY_RESULT $res "After $MAX_RETRY attempts, ${CORE_PEER_ADDRESS} has failed to Join the Channel"
+	sleep 1
 }
 
 function PACKAGE_CHAINCODE {
@@ -87,16 +87,17 @@ function PACKAGE_CHAINCODE {
 	local CC_VERSION=$2
 	local CC_PATH=$3
 
-  BROADCAST "${CORE_PEER_ADDRESS} PACKAGING CHAINCODE: ${CC_NAME}"
+	BROADCAST "${CORE_PEER_ADDRESS} PACKAGING CHAINCODE: ${CC_NAME}"
 
+	# signing package does not seem to install. disable for now: -s -S -i "AND('Org1.admin')"
 	$PEER_BIN chaincode package \
-  -n ${CC_NAME} -v ${CC_VERSION} \
-  -p ${CC_PATH} \
-  -s -S -i "AND('Org1.admin')" ${CC_NAME}_v${CC_VERSION}.out >&log.txt
+	-n ${CC_NAME} -v ${CC_VERSION} \
+	-p ${CC_PATH} \
+	${CC_NAME}_v${CC_VERSION}.out >&log.txt
 
 	res=$?
 	cat log.txt
-  VERIFY_RESULT $res "Chaincode installation on remote peer ${CORE_PEER_ADDRESS} has Failed"
+	VERIFY_RESULT $res "Chaincode installation on remote peer ${CORE_PEER_ADDRESS} has Failed"
 	BROADCAST_RESULT "Chaincode is installed on remote peer ${CORE_PEER_ADDRESS}"
 	sleep 1
 
@@ -122,15 +123,15 @@ function UPDATE_ANCHORPEERS {
 function INSTALL_CHAINCODE_PACKAGE {
 	local CC_PKG=$1
 
-  BROADCAST "${CORE_PEER_ADDRESS} INSTALLING CHAINCODE: ${CC_PKG}"
+	BROADCAST "${CORE_PEER_ADDRESS} INSTALLING CHAINCODE PKG: ${CC_PKG}"
 
 	$PEER_BIN chaincode install \
-  ${CC_PKG} >&log.txt
+	${CC_PKG} >&log.txt
 
 	res=$?
 	cat log.txt
-  VERIFY_RESULT $res "Chaincode installation on remote peer ${CORE_PEER_ADDRESS} has Failed"
-	BROADCAST_RESULT "Chaincode is installed on remote peer ${CORE_PEER_ADDRESS}"
+	VERIFY_RESULT $res "Chaincode PKG installation on remote peer ${CORE_PEER_ADDRESS} has Failed"
+	BROADCAST_RESULT "Chaincode PKG is installed on remote peer ${CORE_PEER_ADDRESS}"
 	sleep 1
 
 }
@@ -140,15 +141,15 @@ function INSTALL_CHAINCODE {
 	local CC_VERSION=$2
 	local CC_PATH=$3
 
-  BROADCAST "${CORE_PEER_ADDRESS} INSTALLING CHAINCODE: ${CC_NAME}"
+	BROADCAST "${CORE_PEER_ADDRESS} INSTALLING CHAINCODE: ${CC_NAME}"
 
 	$PEER_BIN chaincode install \
-  -n ${CC_NAME} -v ${CC_VERSION} \
-  -p ${CC_PATH} >&log.txt
+	-n ${CC_NAME} -v ${CC_VERSION} \
+	-p ${CC_PATH} >&log.txt
 
 	res=$?
 	cat log.txt
-  VERIFY_RESULT $res "Chaincode installation on remote peer ${CORE_PEER_ADDRESS} has Failed"
+	VERIFY_RESULT $res "Chaincode installation on remote peer ${CORE_PEER_ADDRESS} has Failed"
 	BROADCAST_RESULT "Chaincode is installed on remote peer ${CORE_PEER_ADDRESS}"
 	sleep 1
 
@@ -217,9 +218,9 @@ function QUERY_CHAINCODE {
 
 
 
-
-
-
+################################################################################
+# START TEST CODE
+################################################################################
 
 
 cd /data/channel-artifacts
@@ -246,8 +247,8 @@ SET_PEER_ENV peer0; CREATE_CHANNEL testchannel
 
 # JOIN CHANNELS
 for i in peer0 peer1; do
-  SET_PEER_ENV ${i}
-  JOIN_CHANNEL testchannel
+	SET_PEER_ENV ${i}
+	JOIN_CHANNEL testchannel
 done
 
 # UPDATE ANCHOR PEERS
@@ -258,10 +259,10 @@ SET_PEER_ENV peer0; PACKAGE_CHAINCODE ex02 "1.0" github.com/hyperledger/fabric/e
 
 # INSTALL CHAINCODE
 for i in peer0 peer1; do
-  SET_PEER_ENV ${i}
-	# Install from pkg doesnt seem to work...
-	#INSTALL_CHAINCODE_PACKAGE $(pwd)/ex02_v1.0.out
-  INSTALL_CHAINCODE ex02 "1.0" github.com/hyperledger/fabric/examples/chaincode/go/chaincode_example02
+	SET_PEER_ENV ${i}
+	# Install from pkg doesnt seem to work when signed...
+	INSTALL_CHAINCODE_PACKAGE $(pwd)/ex02_v1.0.out
+	#INSTALL_CHAINCODE ex02 "1.0" github.com/hyperledger/fabric/examples/chaincode/go/chaincode_example02
 done
 
 # INIT CHAINCODE
