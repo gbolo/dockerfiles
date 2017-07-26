@@ -14,13 +14,19 @@ BROADCAST_MSG "Runng Fabric SoftHSM Test with NO premade crypto config"
 sleep 2
 
 BROADCAST_MSG "Downloading Required Docker Images"
-for i in ca peer orderer; do
-  docker pull gbolo/fabric-${i}:1.0.0-softhsm
-done
-docker pull gbolo/fabric-tools:1.0.0
+if [ "${1:-pull}" != "nopull" ]; then
+  for i in ca peer orderer; do
+    docker pull gbolo/fabric-${i}:1.0.0-softhsm
+  done
+  docker pull gbolo/fabric-tools:1.0.0
+else
+  echo "Skipping Pull..."
+fi
 
 BROADCAST_MSG "CLEANING UP PREVIOUS COMPOSE"
 docker-compose down -v
+docker rm $(docker ps -a --filter name="dev-peer[0-9].fabric.linuxctl.com-*" --format '{{.ID}}')
+docker rmi $(docker images "dev-peer[0-9].fabric.linuxctl.com-*" --format '{{.ID}}')
 
 BROADCAST_MSG "STARTING UP COMPOSE"
 docker-compose up -d
@@ -29,10 +35,13 @@ BROADCAST_MSG "Tailing fabric-tools..."
 docker logs fabric-tools -f
 
 BROADCAST_MSG "CLEANING UP"
-docker-compose down -v
-docker rm dev-peer0.fabric.linuxctl.com-mycc-1.0
-docker rm dev-peer1.fabric.linuxctl.com-mycc-1.0
-docker rmi dev-peer0.fabric.linuxctl.com-mycc-1.0
-docker rmi dev-peer1.fabric.linuxctl.com-mycc-1.0
+if [ "${2:-clean}" != "noclean" ]; then
+  docker-compose down -v
+  docker rm $(ps -a --filter name="dev-peer[0-9].fabric.linuxctl.com-*" --format '{{.ID}}')
+  docker rmi $(docker images "dev-peer[0-9].fabric.linuxctl.com-*" --format '{{.ID}}')
+else
+  echo "Skipping Cleanup..."
+fi
+
 
 BROADCAST_MSG "run 'docker-compose up' if you want to run again with all logs"
