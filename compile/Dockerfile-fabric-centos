@@ -34,7 +34,8 @@ ENV   BASE_OS=${baseos} \
 # INSTALL BUILD DEPENDENCIES
 RUN   set -xe; \
       yum install -y gcc gcc-c++ autoconf automake unzip binutils make patch git \
-        libtool libtool-ltdl-devel zlib zlib-devel bzip2 bzip2-devel && \
+        libtool libtool-ltdl-devel zlib zlib-devel bzip2 bzip2-devel \
+        glibc-static libstdc++-static && \
       yum clean all && \
 # INSTALL GO
       mkdir -p ${GOROOT} ${GOPATH} && \
