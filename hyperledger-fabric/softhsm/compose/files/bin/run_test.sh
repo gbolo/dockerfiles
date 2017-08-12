@@ -216,6 +216,38 @@ function QUERY_CHAINCODE {
 
 }
 
+function FETCH_BLOCK {
+	local CHANNEL_NAME=$1
+	local BLOCK_TO_FETCH=$2
+
+	BROADCAST "FETCHING BLOCK ${BLOCK_TO_FETCH} FROM CHANNEL ${CHANNEL_NAME}"
+
+	# when using TLS the block is always called true
+	$PEER_BIN channel fetch ${BLOCK_TO_FETCH} \
+	--channelID ${CHANNEL_NAME} \
+	-o ${ORDERER_HOST}:7050 \
+	--tls ${CORE_PEER_TLS_ENABLED} \
+	--cafile ${ORDERER_CA_CERT}
+
+	VERIFY_RESULT $? "Failed to fetch block"
+	mv true ${CHANNEL_NAME}_${BLOCK_TO_FETCH}.block
+	BROADCAST_RESULT "The block was fetched successfully"
+
+}
+
+function VIEW_BLOCK {
+	local BLOCK_FILE=$1
+	local PROFILE=$2
+	local CHANNEL=$3
+
+	BROADCAST "VIEWING BLOCK ${BLOCK_FILE}"
+
+	FABRIC_CFG_PATH=/data \
+	configtxgen -profile ${PROFILE} \
+	-channelID ${CHANNEL} \
+	-inspectBlock ${BLOCK_FILE}
+
+}
 
 
 ################################################################################
@@ -290,5 +322,9 @@ for i in {1..20}; do
 	SET_PEER_ENV peer${n} CRITICAL
 	QUERY_CHAINCODE testchannel ex02 "1.0" '{"Args":["query","a"]}'
 done
+
+# FETCH AND VIEW CONFIG BLOCK FOR FUN
+FETCH_BLOCK testchannel config
+VIEW_BLOCK testchannel_config.block linuxctlChannel testchannel
 
 BROADCAST "SCRIPT HAS COMPLETED!"
