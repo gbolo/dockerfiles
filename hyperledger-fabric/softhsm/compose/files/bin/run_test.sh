@@ -249,6 +249,13 @@ function VIEW_BLOCK {
 
 }
 
+function LIST_CHANNELS {
+
+	BROADCAST "LISTING JOINED CHANNELS FOR: ${CORE_PEER_ADDRESS}"
+
+	$PEER_BIN channel list
+
+}
 
 ################################################################################
 # START TEST CODE
@@ -281,6 +288,11 @@ SET_PEER_ENV peer0; CREATE_CHANNEL testchannel
 for i in peer0 peer1; do
 	SET_PEER_ENV ${i}
 	JOIN_CHANNEL testchannel
+done
+
+# LIST JOINED CHANNELS
+for i in peer0 peer1; do
+	SET_PEER_ENV ${i}; LIST_CHANNELS
 done
 
 # UPDATE ANCHOR PEERS
