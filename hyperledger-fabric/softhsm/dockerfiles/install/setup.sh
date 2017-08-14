@@ -17,7 +17,8 @@ fi
 
 
 # Variables
-APT_PKGS='zlib1g-dev libbz2-dev libyaml-dev libltdl-dev libtool curl ca-certificates openssl git'
+APT_PKGS_BUILD='zlib1g-dev libbz2-dev libyaml-dev libltdl-dev libtool curl ca-certificates openssl git'
+APT_PKGS_PERM='libltdl7'
 LD_FLAGS="-X github.com/hyperledger/fabric/common/metadata.Version=${PROJECT_VERSION} \
           -X github.com/hyperledger/fabric/common/metadata.BaseVersion=${BASEIMAGE_RELEASE} \
           -X github.com/hyperledger/fabric/common/metadata.BaseDockerLabel=org.hyperledger.fabric \
@@ -27,19 +28,23 @@ LD_FLAGS="-X github.com/hyperledger/fabric/common/metadata.Version=${PROJECT_VER
 # install prereqs
 INSTALL_PREREQS() {
   apt-get update
-  apt-get install -y ${APT_PKGS}
+  # needed for build
+  apt-get install -y ${APT_PKGS_BUILD}
+  # needed permanently
+  apt-get install -y --no-install-recommends ${APT_PKGS_PERM}
 }
 
 # remove prereqs
 REMOVE_PREREQS() {
-  apt-get remove -y ${APT_PKGS}
+  apt-get remove -y ${APT_PKGS_BUILD}
+  apt-get autoremove -y
   rm -rf /var/lib/apt/lists/*
 }
 
 # clone fabric-ca
 CLONE_FABRIC_CA() {
   mkdir -p ${GOPATH}/src/github.com/hyperledger/fabric-ca
-  git clone --single-branch -b master https://github.com/hyperledger/fabric-ca ${GOPATH}/src/github.com/hyperledger/fabric-ca
+  git clone --single-branch -b release https://github.com/hyperledger/fabric-ca ${GOPATH}/src/github.com/hyperledger/fabric-ca
   cd ${GOPATH}/src/github.com/hyperledger/fabric-ca
   git checkout ${FABRIC_TAG}
 }
@@ -59,13 +64,13 @@ COMPILE_FABRIC_CA_SERVER() {
 # clone fabric-peer
 CLONE_FABRIC_PEER() {
   mkdir -p ${GOPATH}/src/github.com/hyperledger/fabric
-  git clone https://github.com/hyperledger/fabric ${GOPATH}/src/github.com/hyperledger/fabric
+  git clone --single-branch -b release https://github.com/hyperledger/fabric ${GOPATH}/src/github.com/hyperledger/fabric
   cd ${GOPATH}/src/github.com/hyperledger/fabric
   git checkout ${FABRIC_TAG}
 
   # do a patch if second arg is patch
   if [ "${apply_patch}" = "patch" ]; then
-    patch -f -p1 < /tmp/install/fabric.patch
+    patch -f -p0 < /tmp/install/fabric.patch
   fi
 }
 
@@ -114,13 +119,13 @@ SETUP_GOLANG() {
 
 # setup softhsm2
 SETUP_SOFTHSM() {
-  # Install softhsm2 package
-  apt-get -y install softhsm2
+  # Install softhsm2 and opensc for pkcs11 testing (libhsm-bin also an option)
+  apt-get -y install --no-install-recommends softhsm2 opensc
 
-  # Create tokens directory
+  # Create tokens directory (or you get - ERROR: Could not initialize the library)
   mkdir -p /var/lib/softhsm/tokens/
 
-  # Initialize token
+  # Initialize token for fabric usage
   softhsm2-util --init-token --slot 0 --label "ForFabric" --so-pin 1234 --pin 98765432
 }
 
@@ -141,6 +146,8 @@ if [ "${build_type}" = "peer" ]; then
     /var/hyperledger/db \
     /var/hyperledger/production
   cp -rp ${GOPATH}/src/github.com/hyperledger/fabric/sampleconfig/core.yaml ${FABRIC_CFG_PATH}/
+  # add sample msp or the peer bin will exit even when asking for version :(
+  #cp -rp ${GOPATH}/src/github.com/hyperledger/fabric/sampleconfig/msp ${FABRIC_CFG_PATH}/
 
 elif [ "${build_type}" = "orderer" ]; then
   INSTALL_PREREQS
@@ -179,6 +186,7 @@ else
 fi
 
 # finally
+cp /tmp/install/entrypoint-functions.sh /usr/local/bin/
 cp /tmp/install/entrypoint.sh /usr/local/bin/
 chmod +x /usr/local/bin/*
 SETUP_SOFTHSM

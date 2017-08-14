@@ -22,7 +22,8 @@ ENV   GO_VERSION=${go_version} \
       FABRIC_CA_CLIENT_URL=http://gbolo:testing@ca.fabric.linuxctl.com \
       FABRIC_CA_CLIENT_MSPDIR=/etc/hyperledger/fabric/msp \
       FABRIC_CA_CLIENT_CSR_CN=peerX.fabric.linuxctl.com \
-      FABRIC_CA_CLIENT_CSR_HOSTS=peerX.fabric.linuxctl.com
+      FABRIC_CA_CLIENT_CSR_HOSTS=peerX.fabric.linuxctl.com \
+      DAEMON_TYPE=peer
 
 # INSTALL
 COPY install /tmp/install
