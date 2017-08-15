@@ -12,14 +12,14 @@
 #    - Ability to run extended entrypoint script specified in ENV var
 #
 #   ENV VARS REQUIRED TO RUN THIS ENTRYPOINT:
-#   FABRIC_CA_CLIENT_BCCSP_*  - bccsp configuration for fabric client to enroll
-#   FABRIC_CA_CLIENT_URL      - url with basicauth to fabric-ca-server to enroll
-#   MSP_ADMIN_DIR             - path to directory containing admin certs
-#   DAEMON_TYPE               - type of deamon running: peer,orderer,ca
+#    FABRIC_CA_CLIENT_BCCSP_*  - bccsp configuration for fabric client to enroll
+#    FABRIC_CA_CLIENT_URL      - url with basicauth to fabric-ca-server to enroll
+#    MSP_ADMIN_DIR             - path to directory containing admin certs
+#    DAEMON_TYPE               - type of deamon running: peer,orderer,ca
 #
 #   ENV VARS THAT ARE OPTIONAL:
-#   MSP_TLSCACERTS_DIR        - path to directory containing tls ca certs
-#   ENTRYPOINT_EXTENDED       - path to script we should run for extra setup
+#    MSP_TLSCACERTS_DIR        - path to directory containing tls ca certs
+#    ENTRYPOINT_EXTENDED       - path to script we should run for extra setup
 #
 ################################################################################
 

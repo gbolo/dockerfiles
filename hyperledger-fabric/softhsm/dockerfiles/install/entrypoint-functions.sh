@@ -12,14 +12,14 @@
 #    - Ability to run extended entrypoint script specified in ENV var
 #
 #   ENV VARS REQUIRED TO RUN THIS ENTRYPOINT:
-#   FABRIC_CA_CLIENT_BCCSP_*  - bccsp configuration for fabric client to enroll
-#   FABRIC_CA_CLIENT_URL      - url with basicauth to fabric-ca-server to enroll
-#   MSP_ADMIN_DIR             - path to directory containing admin certs
-#   DAEMON_TYPE               - type of deamon running: peer,orderer,ca
+#    FABRIC_CA_CLIENT_BCCSP_*  - bccsp configuration for fabric client to enroll
+#    FABRIC_CA_CLIENT_URL      - url with basicauth to fabric-ca-server to enroll
+#    MSP_ADMIN_DIR             - path to directory containing admin certs
+#    DAEMON_TYPE               - type of deamon running: peer,orderer,ca
 #
 #   ENV VARS THAT ARE OPTIONAL:
-#   MSP_TLSCACERTS_DIR        - path to directory containing tls ca certs
-#   ENTRYPOINT_EXTENDED       - path to script we should run for extra setup
+#    MSP_TLSCACERTS_DIR        - path to directory containing tls ca certs
+#    ENTRYPOINT_EXTENDED       - path to script we should run for extra setup
 #
 ################################################################################
 
@@ -79,6 +79,8 @@ TEST_PKCS11() {
   VERIFY_RESULT $? "Failed to create signature"
   rm -rf /tmp/testcrypto.txt*
 
+  # TODO: test signature verification, encryt, decrypt
+  
   # Delete Test keypair
   echo
   echo "Deleting test keypair..."
@@ -199,7 +201,9 @@ COPY_TLSCA_CERTS() {
 }
 
 EXECUTE_ADDITIONAL_SCRIPT() {
-  if [ -f ${ENTRYPOINT_EXTENDED:-none} ]; then
+  local DEFAULT_EXTENDED_SCRIPT=/usr/local/bin/entrypoint-extended.sh
+
+  if [ -f ${ENTRYPOINT_EXTENDED:-$DEFAULT_EXTENDED_SCRIPT} ]; then
     BROADCAST_MSG "Executing ${ENTRYPOINT_EXTENDED}"
     chmod +x ${ENTRYPOINT_EXTENDED}
     source ${ENTRYPOINT_EXTENDED}
