@@ -17,6 +17,7 @@ services:
     environment:
       - FABRIC_CA_SERVER_CSR_CN=ca.fabric.linuxctl.com
       - FABRIC_CA_SERVER_CSR_HOSTS=ca.fabric.linuxctl.com
+    command: /bin/bash -c './usr/local/bin/entrypoint.sh fabric-ca-server start -b admin:adminpw'
 
   caOrderer.fabric.linuxctl.com:
     container_name: fabric-caOrderer
@@ -29,7 +30,7 @@ services:
 
   ca-client-register:
     container_name: fabric-ca-client
-    image: gbolo/fabric-ca:1.0.0-softhsm
+    image: gbolo/fabric-ca:${FABRIC_VERSION}-softhsm
     environment:
       - FABRIC_CA_CLIENT_TLS_CERTFILES=/data/tls/ca_root.pem
     volumes:
@@ -44,7 +45,7 @@ services:
 
   caOrderer-client-register:
     container_name: fabric-ca-clientOrderer
-    image: gbolo/fabric-ca:1.0.0-softhsm
+    image: gbolo/fabric-ca:${FABRIC_VERSION}-softhsm
     environment:
       - FABRIC_CA_CLIENT_TLS_CERTFILES=/data/tls/ca_root.pem
     volumes:
@@ -59,7 +60,7 @@ services:
 
   fabric-tools:
     container_name: fabric-tools
-    image: gbolo/fabric-tools:1.0.0
+    image: gbolo/fabric-tools:${FABRIC_VERSION}
     environment:
       - FABRIC_CFG_PATH=/etc/hyperledger/fabric
       - CORE_PEER_BCCSP_DEFAULT=SW
@@ -84,7 +85,6 @@ services:
       - ./files/bin/create_channel_tx.sh:/data/create_channel_tx.sh
       - ./files/bin/run_test.sh:/data/run_test.sh
       - ./files/tls/certs:/data/tls:ro
-      # - ./files/bin/cc_ex2.go:/gopath/src/github.com/hyperledger/fabric/examples/chaincode/go/chaincode_example02/chaincode_example02.go
     command: /bin/bash -c 'echo "Running Test in 20 seconds..."; sleep 20; ./data/run_test.sh'
     depends_on:
       - peer0.fabric.linuxctl.com
@@ -99,11 +99,13 @@ services:
       file:  defaults.yaml
       service: peer-base
     volumes:
+      # local msp dir
       - peer0MSP:/etc/hyperledger/fabric/msp
+      # volumes for msp admin certs
       - adminOrg1MSP:/data/adminOrg1MSP
-      - ./files/bin/entrypoint.sh:/usr/local/bin/entrypoint.sh
       - adminOrdererOrg1MSP:/data/adminOrdererOrg1MSP
-      - channelArtifacts:/data/channelArtifacts
+      # tlsca certs for msp
+      - ./files/tls/certs/ca_root.pem:/data/msp_tlsca/ca_root.pem:ro
     environment:
       # FOR ENROLLMENT
       - FABRIC_CA_CLIENT_URL=https://peer0:testing@ca.fabric.linuxctl.com:7054
@@ -116,6 +118,9 @@ services:
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.fabric.linuxctl.com:7051
       - CORE_PEER_LOCALMSPID=Org1MSP
       - CORE_PEER_GOSSIP_ORGLEADER=true
+      # CUSTOM ENTRYPOINT OPTIONS
+      - MSP_ADMIN_DIR=/data/adminOrg1MSP/signcerts
+      - MSP_TLSCACERTS_DIR=/data/msp_tlsca
     command: /bin/bash -c 'sleep 8; ./usr/local/bin/entrypoint.sh peer node start --peer-defaultchain=false'
     depends_on:
       - ca-client-register
@@ -128,10 +133,13 @@ services:
       file:  defaults.yaml
       service: peer-base
     volumes:
+      # local msp dir
       - peer1MSP:/etc/hyperledger/fabric/msp
+      # volumes for msp admin certs
       - adminOrg1MSP:/data/adminOrg1MSP
-      - ./files/bin/entrypoint.sh:/usr/local/bin/entrypoint.sh
       - adminOrdererOrg1MSP:/data/adminOrdererOrg1MSP
+      # tlsca certs for msp
+      - ./files/tls/certs/ca_root.pem:/data/msp_tlsca/ca_root.pem:ro
     environment:
       # FOR ENROLLMENT
       - FABRIC_CA_CLIENT_URL=https://peer1:testing@ca.fabric.linuxctl.com:7054
@@ -145,6 +153,9 @@ services:
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.fabric.linuxctl.com:7051
       - CORE_PEER_LOCALMSPID=Org1MSP
       - CORE_PEER_GOSSIP_ORGLEADER=false
+      # CUSTOM ENTRYPOINT OPTIONS
+      - MSP_ADMIN_DIR=/data/adminOrg1MSP/signcerts
+      - MSP_TLSCACERTS_DIR=/data/msp_tlsca
     command: /bin/bash -c 'sleep 8; ./usr/local/bin/entrypoint.sh peer node start --peer-defaultchain=false'
     depends_on:
       - ca-client-register
@@ -153,15 +164,18 @@ services:
 
   orderer0.fabric.linuxctl.com:
     container_name: fabric-orderer0
-    image: gbolo/fabric-orderer:1.0.0-softhsm
+    extends:
+      file:  defaults.yaml
+      service: orderer-base
     volumes:
-      - ./files/config/orderer-1.0.0-pkcs11.yaml:/etc/hyperledger/fabric/orderer.yaml:ro
-      - ./files/config/configtx-1.0.0.yaml:/etc/hyperledger/fabric/configtx.yaml:ro
-      - ./files/config/ca-client-1.0.0-pkcs11.yaml:/etc/hyperledger/fabric/client/fabric-ca-client-config.yaml
-      - ./files/tls/certs:/data/tls:ro
-      - ./files/bin/entrypoint.sh:/usr/local/bin/entrypoint.sh
+      # extended entrypoint script
+      - ./files/bin/entrypoint-extended-orderer.sh:/usr/local/bin/entrypoint-extended.sh
+      # tlsca certs for msp
+      - ./files/tls/certs/ca_root.pem:/data/msp_tlsca/ca_root.pem:ro
+      # volumes for msp admin certs
       - adminOrg1MSP:/data/adminOrg1MSP
       - adminOrdererOrg1MSP:/data/adminOrdererOrg1MSP
+      # local msp dir
       - orderer0MSP:/data/orderer0MSP
     environment:
       # FOR ENROLLMENT
@@ -170,29 +184,16 @@ services:
       - FABRIC_CA_CLIENT_CSR_CN=orderer0
       - FABRIC_CA_CLIENT_CSR_HOSTS=orderer0.fabric.linuxctl.com
       - FABRIC_CA_CLIENT_TLS_CERTFILES=/data/tls/ca_root.pem
-      - FABRIC_CA_CLIENT_BCCSP_DEFAULT=PKCS11
-      - FABRIC_CA_CLIENT_BCCSP_PKCS11_LIBRARY=/usr/lib/softhsm/libsofthsm2.so
-      - FABRIC_CA_CLIENT_BCCSP_PKCS11_LABEL=ForFabric
-      - FABRIC_CA_CLIENT_BCCSP_PKCS11_PIN=98765432
-      - FABRIC_CA_CLIENT_BCCSP_PKCS11_SENSITIVEKEYS=false
-      - FABRIC_CA_CLIENT_BCCSP_PKCS11_SOFTWAREVERIFY=false
-      # DAEMON BCCSP OPTIONS
-      - ORDERER_GENERAL_BCCSP_DEFAULT=PKCS11
-      - ORDERER_GENERAL_BCCSP_PKCS11_LIBRARY=/usr/lib/softhsm/libsofthsm2.so
-      - ORDERER_GENERAL_BCCSP_PKCS11_LABEL=ForFabric
-      - ORDERER_GENERAL_BCCSP_PKCS11_PIN=98765432
       # DAEMON SPECIFIC OPTIONS
       - ORDERER_GENERAL_LOCALMSPDIR=/data/orderer0MSP
       - ORDERER_GENERAL_LOGLEVEL=info
       - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
       - ORDERER_GENERAL_GENESISMETHOD=provisional
       - ORDERER_GENERAL_GENESISPROFILE=linuxctlOrdererGenesis
-      # TLS OPTIONS
-      - ORDERER_GENERAL_TLS_ENABLED=true
-      - ORDERER_GENERAL_TLS_CERTIFICATE=/data/tls/server_wild_fabric.linuxctl.com.pem
-      - ORDERER_GENERAL_TLS_PRIVATEKEY=/data/tls/server_wild_fabric.linuxctl.com-key.pem
-      # THIS IS BROKEN: * 'General.TLS.RootCAs': source data must be an array or slice, got string
-      # - ORDERER_GENERAL_TLS_ROOTCAS=/data/tls/ca_root.pem
+      # CUSTOM ENTRYPOINT OPTIONS
+      - MSP_ADMIN_DIR=/data/adminOrdererOrg1MSP/signcerts
+      - MSP_TLSCACERTS_DIR=/data/msp_tlsca
+      - ENTRYPOINT_EXTENDED=/usr/local/bin/entrypoint-extended.sh
     command: /bin/bash -c 'sleep 8; ./usr/local/bin/entrypoint.sh orderer start'
     depends_on:
       - caOrderer-client-register

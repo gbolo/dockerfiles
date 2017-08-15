@@ -10,35 +10,39 @@ version: '2'
 services:
 
   peer-base:
-    image: gbolo/fabric-peer:1.0.0-softhsm
+    image: gbolo/fabric-peer:${FABRIC_VERSION}-softhsm
     volumes:
+      # docker socket
       - /var/run/:/host/var/run/
+      # enrollment config
       - ./files/config/ca-client-1.0.0-pkcs11.yaml:/etc/hyperledger/fabric/client/fabric-ca-client-config.yaml
+      # main config
       - ./files/config/core-1.0.0-pkcs11.yaml:/etc/hyperledger/fabric/core.yaml:ro
+      # tls keys
       - ./files/tls/certs:/data/tls:ro
     environment:
-      # FOR ENROLLMENT
+      # FOR ENROLLMENT - CLIENT BCCSP
       - FABRIC_CA_CLIENT_BCCSP_DEFAULT=PKCS11
-      - FABRIC_CA_CLIENT_BCCSP_PKCS11_LIBRARY=/usr/lib/softhsm/libsofthsm2.so
-      - FABRIC_CA_CLIENT_BCCSP_PKCS11_LABEL=ForFabric
-      - FABRIC_CA_CLIENT_BCCSP_PKCS11_PIN=98765432
-      - FABRIC_CA_CLIENT_BCCSP_PKCS11_SENSITIVEKEYS=false
-      - FABRIC_CA_CLIENT_BCCSP_PKCS11_SOFTWAREVERIFY=false
+      - FABRIC_CA_CLIENT_BCCSP_PKCS11_LIBRARY=${PKCS11_LIBRARY}
+      - FABRIC_CA_CLIENT_BCCSP_PKCS11_LABEL=${PKCS11_LABEL}
+      - FABRIC_CA_CLIENT_BCCSP_PKCS11_PIN=${PKCS11_PIN}
+      - FABRIC_CA_CLIENT_BCCSP_PKCS11_SENSITIVEKEYS=${PKCS11_SENSITIVEKEYS}
+      - FABRIC_CA_CLIENT_BCCSP_PKCS11_SOFTWAREVERIFY=${PKCS11_SOFTWAREVERIFY}
       # FOR PEER DAEMON BCCSP
       - CORE_PEER_BCCSP_DEFAULT=PKCS11
-      - CORE_PEER_BCCSP_PKCS11_LIBRARY=/usr/lib/softhsm/libsofthsm2.so
-      - CORE_PEER_BCCSP_PKCS11_LABEL=ForFabric
-      - CORE_PEER_BCCSP_PKCS11_PIN=98765432
+      - CORE_PEER_BCCSP_PKCS11_LIBRARY=${PKCS11_LIBRARY}
+      - CORE_PEER_BCCSP_PKCS11_LABEL=${PKCS11_LABEL}
+      - CORE_PEER_BCCSP_PKCS11_PIN=${PKCS11_PIN}
       # these options are broken...
       # - CORE_PEER_BCCSP_PKCS11_SENSITIVEKEYS=false
       # - CORE_PEER_BCCSP_PKCS11_SOFTWAREVERIFY=false
-      # REGULAR PEER DAEMON OPTIONS
+      # COMMON PEER DAEMON OPTIONS
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=compose_fabric
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_fabric
       # - CORE_LOGGING_LEVEL=DEBUG
       - CORE_PEER_GOSSIP_USELEADERELECTION=false
       # - CORE_PEER_GOSSIP_ORGLEADER=false
-      # TLS OPTIONS FOR DAEMON
+      # TLS OPTIONS
       - CORE_PEER_TLS_ENABLED=true
       - CORE_PEER_TLS_CERT_FILE=/data/tls/server_wild_fabric.linuxctl.com.pem
       - CORE_PEER_TLS_KEY_FILE=/data/tls/server_wild_fabric.linuxctl.com-key.pem
@@ -47,9 +51,11 @@ services:
       - fabric
 
   ca-base:
-    image: gbolo/fabric-ca:1.0.0-softhsm
+    image: gbolo/fabric-ca:${FABRIC_VERSION}-softhsm
     volumes:
+      # main config
       - ./files/config/ca-server-1.0.0-pkcs11.yaml:/etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml:ro
+      # tls keys
       - ./files/tls/certs:/data/tls:ro
     environment:
       - FABRIC_CA_SERVER_DEBUG=false
@@ -66,3 +72,34 @@ services:
       - FABRIC_CA_SERVER_BCCSP_PKCS11_SOFTWAREVERIFY=true
     networks:
       - fabric
+
+  orderer-base:
+    image: gbolo/fabric-orderer:${FABRIC_VERSION}-softhsm
+    volumes:
+      # main config
+      - ./files/config/orderer-1.0.0-pkcs11.yaml:/etc/hyperledger/fabric/orderer.yaml:ro
+      # provisional genesis block generation
+      - ./files/config/configtx-1.0.0.yaml:/etc/hyperledger/fabric/configtx.yaml:ro
+      # enrollment config
+      - ./files/config/ca-client-1.0.0-pkcs11.yaml:/etc/hyperledger/fabric/client/fabric-ca-client-config.yaml
+      # tls keys
+      - ./files/tls/certs:/data/tls:ro
+    environment:
+      # FOR ENROLLMENT - CLIENT BCCSP
+      - FABRIC_CA_CLIENT_BCCSP_DEFAULT=PKCS11
+      - FABRIC_CA_CLIENT_BCCSP_PKCS11_LIBRARY=${PKCS11_LIBRARY}
+      - FABRIC_CA_CLIENT_BCCSP_PKCS11_LABEL=${PKCS11_LABEL}
+      - FABRIC_CA_CLIENT_BCCSP_PKCS11_PIN=${PKCS11_PIN}
+      - FABRIC_CA_CLIENT_BCCSP_PKCS11_SENSITIVEKEYS=${PKCS11_SENSITIVEKEYS}
+      - FABRIC_CA_CLIENT_BCCSP_PKCS11_SOFTWAREVERIFY=${PKCS11_SOFTWAREVERIFY}
+      # ORDERER BCCSP OPTIONS
+      - ORDERER_GENERAL_BCCSP_DEFAULT=PKCS11
+      - ORDERER_GENERAL_BCCSP_PKCS11_LIBRARY=${PKCS11_LIBRARY}
+      - ORDERER_GENERAL_BCCSP_PKCS11_LABEL=${PKCS11_LABEL}
+      - ORDERER_GENERAL_BCCSP_PKCS11_PIN=${PKCS11_PIN}
+      # TLS OPTIONS
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/data/tls/server_wild_fabric.linuxctl.com.pem
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/data/tls/server_wild_fabric.linuxctl.com-key.pem
+      # THIS IS BROKEN: * 'General.TLS.RootCAs': source data must be an array or slice, got string
+      # - ORDERER_GENERAL_TLS_ROOTCAS=/data/tls/ca_root.pem
