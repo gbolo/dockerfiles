@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# import variables
+source .env
+
 BROADCAST_MSG() {
   local MESSAGE=$1
 
@@ -16,9 +19,9 @@ sleep 2
 BROADCAST_MSG "Downloading Required Docker Images"
 if [ "${1:-pull}" != "nopull" ]; then
   for i in ca peer orderer; do
-    docker pull gbolo/fabric-${i}:1.0.0-softhsm
+    docker pull gbolo/fabric-${i}:${FABRIC_VERSION}-softhsm
   done
-  docker pull gbolo/fabric-tools:1.0.0
+  docker pull gbolo/fabric-tools:${FABRIC_VERSION}
 else
   echo "Skipping Pull..."
 fi
