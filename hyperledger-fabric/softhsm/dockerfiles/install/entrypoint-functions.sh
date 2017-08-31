@@ -80,7 +80,7 @@ TEST_PKCS11() {
   rm -rf /tmp/testcrypto.txt*
 
   # TODO: test signature verification, encryt, decrypt
-  
+
   # Delete Test keypair
   echo
   echo "Deleting test keypair..."
@@ -130,6 +130,20 @@ CHECK_FOR_EXISTING_FABRIC_KEY() {
     return 1
   else
     echo "No existing fabric keys found."
+    return 0
+  fi
+}
+
+CHECK_FOR_EXISTING_FABRIC_ECERT() {
+  BROADCAST_MSG "CHECKING FOR EXISTING FABRIC ENROLLMENT CERT"
+  local MSP_PATH=$(GET_MSP_PATH)
+
+  if ls ${MSP_PATH}/signcerts/*.pem 1> /dev/null 2>&1; then
+    echo "Found existing Fabric Enrollment Certificate:"
+    ls -al ${MSP_PATH}/signcerts/*.pem
+    return 1
+  else
+    echo "No existing fabric enrollment certificate found."
     return 0
   fi
 }
