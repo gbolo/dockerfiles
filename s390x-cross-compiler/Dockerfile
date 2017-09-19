@@ -58,4 +58,4 @@ RUN mkdir -p ${GOPATH} && \
     tar -xf /tmp/go.tgz -C /opt/ && \
     rm -rf /tmp/go.tgz
 
-ENTRYPOINT ["/usr/bin/bash"]
+ENTRYPOINT ["/bin/bash"]
