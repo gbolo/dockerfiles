@@ -19,8 +19,8 @@ Resolving deltas: 100% (25811/25811), done.
 
 # Compile it
 root@aca90b042dc8:/# cd ${GOPATH}/src/github.com/hyperledger/fabric/peer
-root@aca90b042dc8:/opt/gopath/src/github.com/hyperledger/fabric/peer# go build -o peer-amd64 -tags nopkcs11 .
-root@aca90b042dc8:/opt/gopath/src/github.com/hyperledger/fabric/peer# GOARCH=s390x GOOS=linux go build -o peer-s390x -tags nopkcs11 .
+root@aca90b042dc8:/opt/gopath/src/github.com/hyperledger/fabric/peer# go build -o peer-amd64 .
+root@aca90b042dc8:/opt/gopath/src/github.com/hyperledger/fabric/peer# GOARCH=s390x GOOS=linux CC=s390x-linux-gnu-gcc CGO_ENABLED=1 go build -o peer-s390x -tags nopkcs11 .
 root@aca90b042dc8:/opt/gopath/src/github.com/hyperledger/fabric/peer# file peer-*
 peer-amd64: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, not stripped
 peer-s390x: ELF 64-bit MSB executable, IBM S/390, version 1 (SYSV), statically linked, not stripped
