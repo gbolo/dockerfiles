@@ -14,7 +14,7 @@ LABEL maintainer="George Bolo <gbolo@linuxctl.com>" \
 ENV   BASE_OS=${baseos} \
       BASE_DATE=${basedate} \
       GOSU_VERSION=1.10 \
-      CONFD_VERSION=0.11.0
+      CONFD_VERSION=0.14.0
 
 # INSTALL SOME BASE BINS: dumb-init
 COPY  bin/* /usr/local/bin/
