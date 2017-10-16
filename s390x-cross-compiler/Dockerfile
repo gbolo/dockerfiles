@@ -7,7 +7,7 @@ FROM debian:stretch-slim
 LABEL maintainer="George Bolo <gbolo@linuxctl.com>"
 
 # ARGUMENTS
-ARG   go_version=1.7.6
+ARG   go_version=1.9
 
 # ENVIRONMENT VARIABLES
 ENV   GO_VERSION=${go_version} \
