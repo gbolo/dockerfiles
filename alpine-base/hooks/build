@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# https://docs.docker.com/docker-cloud/builds/advanced/#custom-build-phase-hooks
+
+docker build \
+  --build-arg baseos_build_date=$(date -u +"%Y-%m-%d") \
+  --build-arg baseos_build_ref=${SOURCE_COMMIT} \
+  -t ${IMAGE_NAME} .

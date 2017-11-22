@@ -1,18 +1,21 @@
 FROM alpine:3.6
 
 # ARGUMENTS
-ARG   basedate=2017-05-27
 ARG   baseos=alpine-3.6
+ARG   baseos_build_date=undefined
+ARG   baseos_build_ref=undefined
 
 # LABELS
 LABEL maintainer="George Bolo <gbolo@linuxctl.com>" \
       vendor="linuxctl.com" \
       com.linuxctl.baseos=${baseos} \
-      com.linuxctl.basedate=${basedate}
+      com.linuxctl.baseos.build-date=${baseos_build_date} \
+      com.linuxctl.baseos.build-ref=${baseos_build_ref}
 
 # ENVIRONMENT VARIABLES (don't reference other env, use arg vars)
-ENV   BASE_OS=${baseos} \
-      BASE_DATE=${basedate} \
+ENV   BASEOS=${baseos} \
+      BASEOS_BUILD_DATE=${baseos_build_date} \
+      BASEOS_BUILD_REF=${baseos_build_ref} \
       GOSU_VERSION=1.10 \
       CONFD_VERSION=0.14.0
 
