@@ -4,5 +4,5 @@
 
 docker build \
   --build-arg baseos_build_date=$(date -u +"%Y-%m-%d") \
-  --build-arg baseos_build_ref=${SOURCE_COMMIT} \
+  --build-arg baseos_build_ref=$(git rev-parse --short HEAD) \
   -t ${IMAGE_NAME} .
