@@ -1,0 +1,87 @@
+# /etc/nginx/nginx.conf
+
+user nginx;
+pid  /var/run/nginx.pid;
+
+# Set number of worker processes automatically based on number of CPU cores.
+worker_processes {{ if getenv "NGINX_WORKER_PROCESSES" }}{{ getenv "NGINX_WORKER_PROCESSES" }}{{ else }}auto{{ end }};
+
+# Enables the use of JIT for regular expressions to speed-up their processing.
+pcre_jit on;
+
+# Configures default error logger.
+error_log /var/log/nginx/error.log warn;
+
+# Includes files with directives to load dynamic modules.
+include /etc/nginx/modules/*.conf;
+
+events {
+  # The maximum number of simultaneous connections that can be opened by
+  # a worker process.
+  worker_connections {{ if getenv "NGINX_WORKER_CONNECTIONS" }}{{ getenv "NGINX_WORKER_CONNECTIONS" }}{{ else }}1024{{ end }};
+}
+
+http {
+
+  # security settings
+  # Don't tell nginx version to clients.
+  server_tokens off;
+
+  # Path of the file with Diffie-Hellman parameters for EDH ciphers.
+  ssl_dhparam /etc/tls/nginx/default_dhparam_4096.pem;
+
+  # Specifies that our cipher suits should be preferred over client ciphers.
+  ssl_prefer_server_ciphers on;
+
+  ssl_protocols           {{ if getenv "NGINX_SSL_PROTOCOLS" }}{{ getenv "NGINX_SSL_PROTOCOLS" }}{{ else }}TLSv1.1 TLSv1.2{{ end }};
+  ssl_ciphers             '{{ if getenv "NGINX_SSL_CIPHERS" }}{{ getenv "NGINX_SSL_CIPHERS" }}{{ else }}EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH:!aNULL:!MD5{{ end }};';
+  ssl_session_cache       {{ if getenv "NGINX_SSL_SESSION_CACHE" }}{{ getenv "NGINX_SSL_SESSION_CACHE" }}{{ else }}shared:SSL:2m{{ end }};
+  ssl_session_timeout     {{ if getenv "NGINX_SSL_SESSION_TIMEOUT" }}{{ getenv "NGINX_SSL_SESSION_TIMEOUT" }}{{ else }}5m{{ end }};
+
+  # Includes mapping of file name extensions to MIME types of responses
+  # and defines the default type.
+  include /etc/nginx/mime.types;
+  default_type application/octet-stream;
+
+  # Specifies the maximum accepted body size of a client request, as
+  # indicated by the request header Content-Length. If the stated content
+  # length is greater than this size, then the client receives the HTTP
+  # error code 413. Set to 0 to disable.
+  client_max_body_size {{ if getenv "NGINX_MAX_BODY_SIZE" }}{{ getenv "NGINX_MAX_BODY_SIZE" }}{{ else }}1m{{ end }};
+
+  # Timeout for keep-alive connections. Server will close connections after
+  # this time.
+  keepalive_timeout {{ if getenv "NGINX_KEEPALIVE_TIMEOUT" }}{{ getenv "NGINX_KEEPALIVE_TIMEOUT" }}{{ else }}65{{ end }};
+
+  # Sendfile copies data between one FD and other from within the kernel,
+  # which is more efficient than read() + write().
+  sendfile on;
+
+  # Don't buffer data-sends (disable Nagle algorithm).
+  # Good for sending frequent small bursts of data in real time.
+  tcp_nodelay on;
+
+  # Causes nginx to attempt to send its HTTP response head in one packet,
+  # instead of using partial frames.
+  #tcp_nopush on;
+
+  # Enable gzipping of responses.
+  #gzip on;
+
+  # Set the Vary HTTP header as defined in the RFC 2616.
+  gzip_vary on;
+
+  # Enable checking the existence of precompressed files.
+  #gzip_static on;
+
+  # Specifies the main log format.
+  log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+  		'$status $body_bytes_sent "$http_referer" '
+  		'"$http_user_agent" "$http_x_forwarded_for"';
+
+  # Sets the path, format, and configuration for a buffered log write.
+  access_log /var/log/nginx/access.log main;
+
+  # Includes virtual hosts configs.
+  include /etc/nginx/conf.d/*.conf;
+}
