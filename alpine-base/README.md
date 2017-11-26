@@ -11,6 +11,9 @@ Light weight, Alpine based docker image available at: [gbolo/baseos:alpine](http
 ### confd
  - confd installed by default at `/usr/local/bin/confd`
 
+### dumb-init
+ - dumb-init installed by default at `/usr/bin/dumb-init`
+
 ### update-ca-certificates
  - easily update root certificates
 
@@ -21,5 +24,5 @@ Light weight, Alpine based docker image available at: [gbolo/baseos:alpine](http
  - preconfigured `/etc/nsswitch.conf`
 
 ### informational ENV vars
- - `$BASEOS_BUILD_DATE` is set to date of image build
- - `$BASEOS_BUILD_REF` is set to git repo commit hash used for build
+ - `$BASEOS_BUILD_DATE` - set to date of image build and also patch level date
+ - `$BASEOS_BUILD_REF` - set to git repo commit hash used for build

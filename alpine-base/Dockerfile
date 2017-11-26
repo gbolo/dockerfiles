@@ -19,14 +19,16 @@ ENV   BASEOS=${baseos} \
       GOSU_VERSION=1.10 \
       CONFD_VERSION=0.14.0
 
-# INSTALL SOME BASE BINS: dumb-init
-COPY  bin/* /usr/local/bin/
+# COPY BASE ENTRYPOINT
+COPY  entrypoint-base.sh /entrypoints/entrypoint-base
 
 RUN   set -xe; \
+# upgrade all packages
+      apk upgrade --no-progress --no-cache && \
 # nsswitch.conf is needed to make the golang apps respect /ect/hosts
       echo 'hosts: files dns' > /etc/nsswitch.conf && \
-# install root ca certificates and openssl
-      apk add --no-cache ca-certificates openssl && \
+# install some basics that make sense in a base image
+      apk add --no-cache ca-certificates openssl dumb-init && \
       update-ca-certificates && \
 # install gosu for user switching
       wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-amd64" && \
@@ -34,5 +36,8 @@ RUN   set -xe; \
       wget -O /usr/local/bin/confd "https://github.com/kelseyhightower/confd/releases/download/v${CONFD_VERSION}/confd-${CONFD_VERSION}-linux-amd64" && \
 # bins should be r+x
       chmod 555 /usr/local/bin/* && \
+      chmod 555 /entrypoints/* && \
 # remove deps
       apk del openssl
+
+ENTRYPOINT ["/entrypoints/entrypoint-base"]
