@@ -8,6 +8,9 @@
 
 Light weight, Alpine based docker image available at: [gbolo/baseos:alpine](https://hub.docker.com/r/gbolo/baseos/)
 
+### entrypoint-base
+ - comes with default entrypoint script which executes most of the features below, which can be reused in other images
+
 ### confd
  - confd installed by default at `/usr/local/bin/confd`
 
@@ -26,3 +29,8 @@ Light weight, Alpine based docker image available at: [gbolo/baseos:alpine](http
 ### informational ENV vars
  - `$BASEOS_BUILD_DATE` - set to date of image build and also patch level date
  - `$BASEOS_BUILD_REF` - set to git repo commit hash used for build
+
+## Entrypoint
+
+The entrypoint script is intended to be executed by other entrypoint scripts
+to provide basic functionality which does not need to be repeated.

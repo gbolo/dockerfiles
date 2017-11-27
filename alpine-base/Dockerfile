@@ -40,4 +40,4 @@ RUN   set -xe; \
 # remove deps
       apk del openssl
 
-ENTRYPOINT ["/entrypoints/entrypoint-base"]
+ENTRYPOINT ["/usr/bin/dumb-init", "--", "/entrypoints/entrypoint-base"]
