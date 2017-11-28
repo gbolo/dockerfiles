@@ -2,7 +2,12 @@
 
 # https://docs.docker.com/docker-cloud/builds/advanced/#custom-build-phase-hooks
 
+# determine which dockerfile to use.
+# instead of case statement, lets assume we have file per tag:
+DOCKERFILE="Dockerfile.${CACHE_TAG}"
+
 docker build \
   --build-arg baseos_build_date=$(date -u +"%Y-%m-%d") \
   --build-arg baseos_build_ref=$(git rev-parse --short HEAD) \
+  -f ${DOCKERFILE} \
   -t ${IMAGE_NAME} .
