@@ -5,25 +5,28 @@
 #    for use with image: gbolo/nginx
 #
 
+# execute entrypoint-base ------------------------------------------------------
+/entrypoints/entrypoint-base
+
+# print nginx image info -------------------------------------------------------
+echo "> Executed entrypoint-nginx on: $(date)"
+echo "> Nginx envioronment variables:"
+env | grep NGINX_
+
 # CONFD ------------------------------------------------------------------------
-echo "Invoking confd to generate default nginx.conf ..."
+echo "> Invoking confd to generate default nginx.conf ..."
 /usr/local/bin/confd -version
 /usr/local/bin/confd -confdir /etc/confd.nginx -onetime -backend env
 
-if [ -d /etc/confd ]; then
-  echo "Invoking confd to generate additional config files(s) ..."
-  /usr/local/bin/confd -onetime -backend env
-fi
-
 # NGINX ------------------------------------------------------------------------
 if [ -z "$(ls -A /etc/nginx/conf.d)" ]; then
-   echo "WARNING: no default servers defined in /etc/nginx/conf.d"
+   echo "> !! WARNING !! no http servers defined in /etc/nginx/conf.d"
 fi
 
 if [ $# -eq 0 ]; then
-  echo "Starting nginx ..."
+  echo "> Starting nginx ..."
   /usr/sbin/nginx -g "daemon off;"
 else
-  echo "Executing: ${@}"
+  echo "> Executing as uid [$(/usr/bin/id -u)]: ${@}"
   exec "$@"
 fi

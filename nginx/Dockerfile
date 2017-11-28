@@ -27,9 +27,9 @@ RUN     set -xe; \
 # COPY REQUIRED FILES
 COPY    confd /etc/confd.nginx
 COPY    default_dhparam_4096.pem /etc/tls/nginx/default_dhparam_4096.pem
-COPY    entrypoint.sh /entrypoint
+COPY    entrypoint.sh /entrypoints/entrypoint-nginx
 
 EXPOSE  80 443
 
-ENTRYPOINT  ["/entrypoint"]
+ENTRYPOINT  ["/usr/bin/dumb-init", "--", "/entrypoints/entrypoint-nginx"]
 CMD         ["nginx", "-g", "daemon off;"]
