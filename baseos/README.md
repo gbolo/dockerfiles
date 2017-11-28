@@ -1,4 +1,7 @@
-# Docker Image: [gbolo/baseos:alpine](https://hub.docker.com/r/gbolo/baseos/)
+# Docker Images
+
+* [`gbolo/baseos:alpine`](https://hub.docker.com/r/gbolo/baseos/) - [*(Dockerfile.alpine)*](https://github.com/gbolo/dockerfiles/blob/master/baseos/Dockerfile.alpine)
+* [`gbolo/baseos:debian`](https://hub.docker.com/r/gbolo/baseos/) - [*(Dockerfile.debian)*](https://github.com/gbolo/dockerfiles/blob/master/baseos/Dockerfile.debian)
 
 [![Docker Automated build](https://img.shields.io/docker/automated/gbolo/baseos.svg)]()
 [![Docker Build Status](https://img.shields.io/docker/build/gbolo/baseos.svg)]()
@@ -6,7 +9,7 @@
 
 ## Features
 
-Light weight, Alpine based docker image available at: [gbolo/baseos:alpine](https://hub.docker.com/r/gbolo/baseos/)
+Light weight baseos images with features listed below:
 
 ### entrypoint-base
  - comes with default entrypoint script which executes most of the features below, which can be reused in other images
