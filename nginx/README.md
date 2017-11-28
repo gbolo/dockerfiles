@@ -9,7 +9,7 @@
 Light weight, Alpine based nginx docker image available at: [gbolo/nginx:alpine](https://hub.docker.com/r/gbolo/nginx/)
 
 ### gbolo/baseos:alpine base image
- - inherits all features found in [gbolo/baseos:alpine](https://github.com/gbolo/dockerfiles/blob/master/alpine-base/README.md)
+ - inherits all features found in [gbolo/baseos:alpine](https://hub.docker.com/r/gbolo/baseos)
 
 ### templated nginx.conf
  - dynamically generated nginx.conf based on the following environment variables:
