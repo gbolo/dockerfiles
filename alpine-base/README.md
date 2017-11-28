@@ -23,6 +23,9 @@ Light weight, Alpine based docker image available at: [gbolo/baseos:alpine](http
 ### gosu
  - ability to `su` without a `TTY`!
 
+### timezone is configurable
+ - TZ data is installed and configurable through env var `TZ`
+
 ### nsswitch.conf
  - preconfigured `/etc/nsswitch.conf`
 

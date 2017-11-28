@@ -28,12 +28,15 @@ RUN   set -xe; \
 # nsswitch.conf is needed to make the golang apps respect /ect/hosts
       echo 'hosts: files dns' > /etc/nsswitch.conf && \
 # install some basics that make sense in a base image
-      apk add --no-cache ca-certificates openssl dumb-init && \
+      apk add --no-cache ca-certificates openssl dumb-init tzdata && \
       update-ca-certificates && \
+# setup default timezone
+      ln -fs /usr/share/zoneinfo/${TZ} /etc/localtime && \
+      echo ${TZ} > /etc/timezone && \
 # install gosu for user switching
-      wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-amd64" && \
+      wget --no-verbose -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-amd64" && \
 # install confd for config templating
-      wget -O /usr/local/bin/confd "https://github.com/kelseyhightower/confd/releases/download/v${CONFD_VERSION}/confd-${CONFD_VERSION}-linux-amd64" && \
+      wget --no-verbose -O /usr/local/bin/confd "https://github.com/kelseyhightower/confd/releases/download/v${CONFD_VERSION}/confd-${CONFD_VERSION}-linux-amd64" && \
 # bins should be r+x
       chmod 555 /usr/local/bin/* && \
       chmod 555 /entrypoints/* && \
