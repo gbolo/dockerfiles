@@ -13,6 +13,7 @@ echo "> Version Information:"
 env | grep BASEOS_BUILD
 
 # timezone configuration -------------------------------------------------------
+# try to configure timezone if properly set and running as root
 if [ "$(cat /etc/timezone)" != "${TZ:-none}" ] && [ "none" != "${TZ:-none}" ]; then
   echo "> Timezone env [TZ] does not match /etc/timezone"
   if [ "$(id -u)" -eq 0 ]; then
