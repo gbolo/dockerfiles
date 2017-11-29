@@ -4,7 +4,8 @@
 
 # determine which dockerfile to use.
 # instead of case statement, lets assume we have file per tag:
-DOCKERFILE="Dockerfile.${CACHE_TAG}"
+DOCKERFILE="Dockerfile.${DOCKER_TAG}"
+echo "building ${DOCKERFILE}"
 
 docker build \
   --build-arg baseos_build_date=$(date -u +"%Y-%m-%d") \
