@@ -4,14 +4,13 @@
 #  BUILD CONTAINER -------------------------------------------------------------
 #
 
-FROM golang:alpine as builder
+FROM gbolo/builder:alpine as builder
 
 # Arguments
 ARG   ghostunnel_version=master
 
 # Building
 RUN   set -xe; \
-      apk add --no-cache --update git gcc musl-dev libtool && \
       SRC_DIR=${GOPATH}/src/github.com/square/ghostunnel; \
       SRC_REPO=https://github.com/square/ghostunnel; \
       mkdir -p ${SRC_DIR} && \
