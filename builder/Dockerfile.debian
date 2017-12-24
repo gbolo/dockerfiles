@@ -28,6 +28,9 @@ RUN     set -xe; \
         GO_URL=https://storage.googleapis.com/golang/go${go_version}.linux-amd64.tar.gz; \
         curl -sL -o /tmp/go.tgz ${GO_URL} && \
         tar -xf /tmp/go.tgz -C /opt/ && rm -rf /tmp/go.tgz && \
-        mkdir -p ${GOPATH}
+        mkdir -p ${GOPATH} && \
+# clean up
+        apt-get autoremove -y && \
+        rm -rf /var/lib/apt/lists/*
 
 ENTRYPOINT  ["/bin/bash"]
