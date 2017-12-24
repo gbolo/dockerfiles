@@ -20,7 +20,7 @@ RUN     set -xe; \
         DEBIAN_FRONTEND=noninteractive \
         apt-get install -y --no-install-recommends build-essential gnupg \
            git gcc libtool file libssl-dev openssl patch make curl ca-certificates \
-           g++ python python3 python-pip python3-pip php-cli && \
+           g++ python python3 python-dev python3-dev python-pip python3-pip php-cli && \
         # nodejs
         curl -sL https://deb.nodesource.com/setup_9.x | bash - && \
         apt-get install -y --no-install-recommends nodejs && \
