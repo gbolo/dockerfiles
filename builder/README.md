@@ -1,6 +1,7 @@
 # Docker Images
 
 * [`gbolo/builder:alpine`](https://hub.docker.com/r/gbolo/builder/) - [*(Dockerfile.alpine)*](https://github.com/gbolo/dockerfiles/blob/master/builder/Dockerfile.alpine)
+* [`gbolo/builder:debian`](https://hub.docker.com/r/gbolo/builder/) - [*(Dockerfile.debian)*](https://github.com/gbolo/dockerfiles/blob/master/builder/Dockerfile.debian)
 
 [![Docker Automated build](https://img.shields.io/docker/automated/gbolo/builder.svg)]()
 [![Docker Build Status](https://img.shields.io/docker/build/gbolo/builder.svg)]()
