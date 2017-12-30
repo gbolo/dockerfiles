@@ -1,0 +1,13 @@
+# https://doc.powerdns.com/md/authoritative/backend-generic-sqlite/
+
+# Path to the SQLite3 database
+gsqlite3-database={{ if getenv "PDNS_GSQLITE3_DATABASE" }}{{ getenv "PDNS_GSQLITE3_DATABASE" }}{{ else }}/etc/pdns/data/powerdns.sqlite3.db{{ end }}
+
+# Set this to 0 for blazing speed
+gsqlite3-pragma-synchronous={{ if getenv "PDNS_GSQLITE3_SYNCHRONOUS" }}{{ getenv "PDNS_GSQLITE3_SYNCHRONOUS" }}{{ else }}0{{ end }}
+
+# Enable foreign key constraints
+{{ if getenv "PDNS_GSQLITE3_FOREIGN_KEYS" }}gsqlite3-pragma-foreign-keys={{ getenv "PDNS_GSQLITE3_FOREIGN_KEYS" }}{{ end }}
+
+# Enable DNSSEC processing
+{{ if getenv "PDNS_GSQLITE3_DNSSEC" }}gsqlite3-dnssec={{ getenv "PDNS_GSQLITE3_DNSSEC" }}{{ end }}

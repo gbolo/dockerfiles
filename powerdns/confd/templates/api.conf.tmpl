@@ -1,0 +1,10 @@
+# https://doc.powerdns.com/md/authoritative/settings/#api
+
+# Enable/disable the REST API
+api={{ if getenv "PDNS_ENABLE_API" }}{{ getenv "PDNS_ENABLE_API" }}{{ else }}yes{{ end }}
+
+# Static pre-shared authentication key for access to the REST API
+api-key={{ if getenv "PDNS_API_KEY" }}{{ getenv "PDNS_API_KEY" }}{{ else }}defaultchangme{{ end }}
+
+# Disallow data modification through the REST API when set
+api-readonly={{ if getenv "PDNS_API_READONLY" }}{{ getenv "PDNS_API_READONLY" }}{{ else }}no{{ end }}
