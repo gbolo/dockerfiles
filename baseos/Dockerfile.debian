@@ -16,6 +16,7 @@ LABEL maintainer="George Bolo <gbolo@linuxctl.com>" \
 ENV   BASEOS=${baseos} \
       BASEOS_BUILD_DATE=${baseos_build_date} \
       BASEOS_BUILD_REF=${baseos_build_ref} \
+      TINI_VERSION=0.16.1 \
       GOSU_VERSION=1.10 \
       CONFD_VERSION=0.14.0 \
       TZ=America/Toronto
@@ -33,6 +34,9 @@ RUN   set -xe; \
 # setup default timezone
       ln -fs /usr/share/zoneinfo/${TZ} /etc/localtime && \
       echo ${TZ} > /etc/timezone && \
+# install tini as dumb-init alternative
+      wget --no-verbose -O /sbin/tini "https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini" && \
+      chmod 755 /sbin/tini && \
 # install gosu for user switching
       wget --no-verbose -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-amd64" && \
 # install confd for config templating

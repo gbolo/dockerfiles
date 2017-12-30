@@ -17,8 +17,9 @@ Light weight baseos images with features listed below:
 ### confd
  - confd installed by default at `/usr/local/bin/confd`
 
-### dumb-init
+### dumb-init & tini
  - dumb-init installed by default at `/usr/bin/dumb-init`
+ - tini installed by default at `/sbin/tini`
 
 ### update-ca-certificates
  - easily update root certificates
