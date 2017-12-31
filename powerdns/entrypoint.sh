@@ -26,10 +26,7 @@ create_dir() {
   fi
 }
 
-# prepare backend(s)
-case "${PDNS_LAUNCH}" in
-*gsqlite3*)
-  echo "> Detected gsqlite3. Preparing sqlite backend ..."
+init_sqlite3() {
   if [ ! -f "${PDNS_GSQLITE3_DATABASE}" ]; then
     create_dir $(dirname ${PDNS_GSQLITE3_DATABASE})
     echo "Initializing ${PDNS_GSQLITE3_DATABASE}"
@@ -40,9 +37,17 @@ case "${PDNS_LAUNCH}" in
   else
     echo "${PDNS_GSQLITE3_DATABASE} already exists"
   fi
+}
+
+# prepare backend(s)
+case "${PDNS_LAUNCH}" in
+*gsqlite3*)
+  echo "> Detected gsqlite3. Preparing sqlite backend ..."
+  init_sqlite3
   ;;
 *)
-  echo "> Could not detect a pdns backend ..." ;;
+  echo "> Could not detect a pdns backend to init ..."
+  ;;
 esac
 
 # start pdns

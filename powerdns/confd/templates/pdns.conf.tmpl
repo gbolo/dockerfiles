@@ -18,7 +18,7 @@
 #################################
 # cache-ttl	Seconds to store packets in the PacketCache
 #
-cache-ttl=60
+cache-ttl={{ if getenv "PDNS_CACHE_TTL" }}{{ getenv "PDNS_CACHE_TTL" }}{{ else }}60{{ end }}
 
 #################################
 # chroot	If set, chroot to this directory for more security
@@ -138,7 +138,7 @@ local-port={{ if getenv "PDNS_LOCAL_PORT" }}{{ getenv "PDNS_LOCAL_PORT" }}{{ els
 #################################
 # loglevel	Amount of logging. Higher is more. Do not set below 3
 #
-loglevel=3
+loglevel={{ if getenv "PDNS_LOGLEVEL" }}{{ getenv "PDNS_LOGLEVEL" }}{{ else }}3{{ end }}
 
 #################################
 # master	Act as a master
@@ -183,7 +183,12 @@ negquery-cache-ttl=60
 #################################
 # query-cache-ttl	Seconds to store packets in the PacketCache
 #
-# query-cache-ttl=20
+{{ if getenv "PDNS_QUERY_CACHE_TTL" }}query-cache-ttl={{ getenv "PDNS_QUERY_CACHE_TTL" }}{{ end }}
+
+#################################
+# max-cache-entries Maximum number of entries in the query cache
+#
+{{ if getenv "PDNS_MAX_CACHE_ENTRIES" }}max-cache-entries={{ getenv "PDNS_MAX_CACHE_ENTRIES" }}{{ end }}
 
 #################################
 # query-local-address	Source IP address for sending queries
