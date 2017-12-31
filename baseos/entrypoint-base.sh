@@ -48,8 +48,7 @@ fi
 
 # exec when arguments exist or else exit ---------------------------------------
 if [ $# -eq 0 ]; then
-  echo "> Exiting entrypoint-base"
-  echo
+  echo "!! Exiting entrypoint-base"
   exit 0
 else
   echo "> Executing as uid [$(/usr/bin/id -u)]: ${@}"
