@@ -1,0 +1,32 @@
+# https://doc.powerdns.com/md/authoritative/backend-generic-mysql/
+
+# Host (ip address) to connect to. Mutually exclusive with gmysql-socket.
+# WARNING: When specified as a hostname a chicken/egg situation might arise where the database is needed to resolve the IP address of the database. It is best to supply an IP address of the database here.
+{{ if getenv "PDNS_MYSQL_HOST" }}gmysql-host={{ getenv "PDNS_MYSQL_HOST" }}{{ end }}
+
+# The port to connect to on gmysql-host. Default: 3306
+{{ if getenv "PDNS_MYSQL_PORT" }}gmysql-port={{ getenv "PDNS_MYSQL_PORT" }}{{ end }}
+
+# Connect to the UNIX socket at this path. Mutually exclusive with gmysql-host.
+{{ if getenv "PDNS_MYSQL_SOCKET" }}gmysql-socket={{ getenv "PDNS_MYSQL_SOCKET" }}{{ end }}
+
+# Name of the database to connect to. Default: "pdns".
+{{ if getenv "PDNS_MYSQL_DBNAME" }}gmysql-dbname={{ getenv "PDNS_MYSQL_DBNAME" }}{{ end }}
+
+# User to connect as. Default: "powerdns".
+{{ if getenv "PDNS_MYSQL_USER" }}gmysql-user={{ getenv "PDNS_MYSQL_USER" }}{{ end }}
+
+# Group to connect as. Default: "client".
+{{ if getenv "PDNS_MYSQL_GROUP" }}gmysql-group={{ getenv "PDNS_MYSQL_GROUP" }}{{ end }}
+
+# The password to for gmysql-user.
+{{ if getenv "PDNS_MYSQL_PASSWORD" }}gmysql-password={{ getenv "PDNS_MYSQL_PASSWORD" }}{{ end }}
+
+# Enable DNSSEC processing for this backend. Default=no.
+{{ if getenv "PDNS_MYSQL_DNSSEC" }}gmysql-dnssec={{ getenv "PDNS_MYSQL_DNSSEC" }}{{ end }}
+
+# Use the InnoDB READ-COMMITTED transaction isolation level. Default=yes.
+{{ if getenv "PDNS_MYSQL_INNODB_READ_COMMITTED" }}gmysql-innodb-read-committed={{ getenv "PDNS_MYSQL_INNODB_READ_COMMITTED" }}{{ end }}
+
+# The timeout in seconds for each attempt to read from, or write to the server. A value of 0 will disable the timeout. Default: 10
+{{ if getenv "PDNS_MYSQL_TIMEOUT" }}gmysql-timeout={{ getenv "PDNS_MYSQL_TIMEOUT" }}{{ end }}

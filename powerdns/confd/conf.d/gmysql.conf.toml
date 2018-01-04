@@ -2,10 +2,10 @@
 
 # The name of the template that will be used to render the application's configuration file
 # Confd will look in `/etc/conf.d/templates` for these files by default
-src = "gsqlite3.conf.tmpl"
+src = "gmysql.conf.tmpl"
 
 # The location to place the rendered configuration file
-dest = "/etc/pdns/conf.d/gsqlite3.conf.disabled"
+dest = "/etc/pdns/conf.d/gmysql.conf.disabled"
 
 # File ownership and mode information
 owner = "root"

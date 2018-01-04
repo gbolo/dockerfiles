@@ -18,7 +18,7 @@ ENV   PDNS_LAUNCH="gsqlite3,bind" \
 # Install prereqs
 RUN   set -xe; \
       apk add --no-cache --update pdns pdns-backend-sqlite3 pdns-backend-mysql \
-         pdns-backend-pgsql pdns-backend-bind pdns-backend-pipe && \
+         pdns-backend-pgsql pdns-backend-bind pdns-backend-pipe mariadb-client && \
       mkdir -p /etc/pdns/conf.d
 
 
