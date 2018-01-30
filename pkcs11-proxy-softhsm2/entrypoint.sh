@@ -8,7 +8,7 @@
 # execute entrypoint-base ------------------------------------------------------
 /entrypoints/entrypoint-base
 
-# print nginx image info -------------------------------------------------------
+# print hsm-pkcs11proxy image info ---------------------------------------------
 echo "> Executed entrypoint-pkcs11-proxy on: $(date)"
 echo "> pkcs11-proxy environment variables:"
 env | grep PKCS11_
