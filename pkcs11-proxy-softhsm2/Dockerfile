@@ -9,7 +9,7 @@ ENV     PKCS11_DAEMON_SOCKET=tcp://0.0.0.0:${PKCS11_PROXY_PORT} \
         PKCS11_SLOT_PIN=somePin \
         PKCS11_SO_PIN=1234
 
-COPY    GENERATE_GENERIC_SECRET.patch /tmp/GENERATE_GENERIC_SECRET.patch
+COPY    CKM_GENERIC_SECRET_KEY_GEN.patch /tmp/CKM_GENERIC_SECRET_KEY_GEN.patch
 
 # INSTALL PKCS11-PROXY AND SOFTHSM2 FROM SOURCE
 RUN     set -xe; \
@@ -38,7 +38,7 @@ RUN     set -xe; \
         cd /; rm -rf /tmp/pkcs11-proxy && \
         git clone https://github.com/opendnssec/SoftHSMv2 /tmp/softhsm2 && \
         cd /tmp/softhsm2; git checkout ${SOFTHSM_GIT_REF} && \
-        patch -p1 < /tmp/GENERATE_GENERIC_SECRET.patch && \
+        patch --batch -p1 < /tmp/CKM_GENERIC_SECRET_KEY_GEN.patch && \
         sh autogen.sh && \
         ./configure --disable-gost --with-objectstore-backend-db && \
         make && make install && cd /; rm -rf /tmp/softhsm2 && \
