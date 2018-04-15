@@ -20,14 +20,18 @@ RUN     set -xe; \
           libssl-dev \
           libseccomp-dev \
           libsqlite3-dev \
-          libssl-dev \
           autoconf \
           automake \
           libtool \
         '; \
+        permDeps=' \
+          sqlite3 \
+          libssl1.1 \
+          libseccomp2 \
+        '; \
         apt-get update && \
         DEBIAN_FRONTEND=noninteractive \
-        apt-get install -y --no-install-recommends sqlite3 $buildDeps && \
+        apt-get install -y --no-install-recommends $buildDeps $permDeps && \
         rm -rf /var/lib/apt/lists/* && \
         git clone https://github.com/SUNET/pkcs11-proxy /tmp/pkcs11-proxy && \
         cd /tmp/pkcs11-proxy && cmake . && make && make install && \
