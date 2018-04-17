@@ -5,7 +5,7 @@ ARG     PKCS11_PROXY_PORT=5657
 ARG     SOFTHSM_GIT_REF=2.4.0
 
 ENV     PKCS11_DAEMON_SOCKET=tcp://0.0.0.0:${PKCS11_PROXY_PORT} \
-        PKCS11_SLOT_LABEL=someLabel \
+        PKCS11_SLOT_LABELS=someLabel1,slotLabel2 \
         PKCS11_SLOT_PIN=somePin \
         PKCS11_SO_PIN=1234
 
