@@ -29,4 +29,4 @@ RUN     mkdir -p ${GOPATH} && \
         rm -rf /tmp/go.tgz && \
         go get github.com/gbolo/go-util/p11tool && \
         go get github.com/gbolo/go-util/pkcs11-test && \
-        go get github.com/gbolo/p11tool-new
+        go get github.com/scottallan/p11tool-new
