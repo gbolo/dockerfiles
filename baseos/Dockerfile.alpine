@@ -17,7 +17,7 @@ ENV   BASEOS=${baseos} \
       BASEOS_BUILD_DATE=${baseos_build_date} \
       BASEOS_BUILD_REF=${baseos_build_ref} \
       GOSU_VERSION=1.10 \
-      CONFD_VERSION=0.14.0
+      CONFD_VERSION=0.16.0
 
 # COPY BASE ENTRYPOINT
 COPY  entrypoint-base.sh /entrypoints/entrypoint-base

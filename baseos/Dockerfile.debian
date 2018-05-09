@@ -18,7 +18,7 @@ ENV   BASEOS=${baseos} \
       BASEOS_BUILD_REF=${baseos_build_ref} \
       TINI_VERSION=0.16.1 \
       GOSU_VERSION=1.10 \
-      CONFD_VERSION=0.14.0 \
+      CONFD_VERSION=0.16.0 \
       TZ=America/Toronto
 
 # COPY BASE ENTRYPOINT
