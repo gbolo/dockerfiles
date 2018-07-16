@@ -1,7 +1,7 @@
-FROM  alpine:3.7
+FROM  alpine:3.8
 
 # ARGUMENTS
-ARG   baseos=alpine-3.7
+ARG   baseos=alpine-3.8
 ARG   baseos_build_date=undefined
 ARG   baseos_build_ref=undefined
 
