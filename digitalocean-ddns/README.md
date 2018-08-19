@@ -18,6 +18,11 @@ docker run -it --rm \
  -e DODDNS_DOMAIN=testrecord.linuxctl.com \
  gbolo/digitalocean-ddns
 
+> Executed entrypoint-base on: Sun Aug 19 17:12:22 UTC 2018
+> Version Information:
+BASEOS_BUILD_DATE=2018-06-01
+BASEOS_BUILD_REF=3f0d121
+> Executing as uid [65534]: /usr/local/bin/digitalocean-ddns
 [2018-08-19T17:12:22Z]  INFO config: file=/etc/digitalocean-ddns/config.yml
 [2018-08-19T17:12:22Z]  INFO service: run as service every 1h0m0s
 [2018-08-19T17:12:22Z]  INFO ipchk: using 'https://linuxctl.com/ip' for ip check

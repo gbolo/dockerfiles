@@ -37,5 +37,8 @@ RUN   set -xe; \
 COPY  --from=builder /usr/local/bin/digitalocean-ddns /usr/local/bin/digitalocean-ddns
 COPY  --from=builder /tmp/config.yml /etc/digitalocean-ddns/config.yml
 
-# override entry
-ENTRYPOINT  ["/usr/local/bin/digitalocean-ddns"]
+# Run as non-privileged user by default
+USER  65534
+
+# Inherit gbolo/baseos entrypoint and pass it this argument
+CMD  ["/usr/local/bin/digitalocean-ddns"]
