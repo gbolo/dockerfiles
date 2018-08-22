@@ -17,7 +17,7 @@ RUN   set -xe; \
       git clone -b master --single-branch ${SRC_REPO} ${SRC_DIR} && \
       cd ${SRC_DIR}; \
       if [ "${do_ddns_version}" != "master" ]; then git checkout ${do_ddns_version}; fi && \
-      make deps && make install && cp -rp pkg/config.example.yml /tmp/config.yml
+      make deps && make install
 
 #
 #  FINAL BASE CONTAINER --------------------------------------------------------
@@ -26,16 +26,10 @@ RUN   set -xe; \
 FROM  gbolo/baseos:alpine
 
 # ENVIRONMENT VARIABLES
-ENV   DODDNS_LOG_FILE=/dev/stdout \
-      DODDNS_URL_LIST=https://linuxctl.com/ip
-
-# Install prereqs
-RUN   set -xe; \
-      mkdir -p /etc/digitalocean-ddns
+ENV   DODDNS_URL_LIST=https://linuxctl.com/ip
 
 # Copy in from builder
 COPY  --from=builder /usr/local/bin/digitalocean-ddns /usr/local/bin/digitalocean-ddns
-COPY  --from=builder /tmp/config.yml /etc/digitalocean-ddns/config.yml
 
 # Run as non-privileged user by default
 USER  65534
