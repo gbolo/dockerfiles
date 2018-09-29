@@ -1,0 +1,73 @@
+version: "3.5"
+
+networks:
+  network:
+
+services:
+
+  cdb1:
+    environment:
+      COUCHDB_PASSWORD: -pbkdf2-847043acc65626c8eb98da6d78682fbc493a1787,f7b1a3e4b624f4f0bbfe87e96841eda0,10
+      COUCHDB_SECRET: 0123456789abcdef0123456789abcdef
+      COUCHDB_USER: couchdb
+      NODENAME: couchdb1.demo.vme
+    image: couchdb:2.2
+    networks:
+      network:
+        aliases:
+          - couchdb1.demo.vme
+    ports:
+      - "15984:5984"
+      - "15986:5986"
+    volumes:
+      - ./vol/couchdb-configs/cluster.ini:/opt/couchdb/etc/local.d/cluster.ini:ro
+    #   - "cdb1vol:/opt/couchdb/data"
+
+  cdb2:
+    environment:
+      COUCHDB_PASSWORD: -pbkdf2-847043acc65626c8eb98da6d78682fbc493a1787,f7b1a3e4b624f4f0bbfe87e96841eda0,10
+      COUCHDB_SECRET: 0123456789abcdef0123456789abcdef
+      COUCHDB_USER: couchdb
+      NODENAME: couchdb2.demo.vme
+    image: couchdb:2.2
+    networks:
+      network:
+        aliases:
+          - couchdb2.demo.vme
+    ports:
+      - "25984:5984"
+      - "25986:5986"
+    volumes:
+      - ./vol/couchdb-configs/cluster.ini:/opt/couchdb/etc/local.d/cluster.ini:ro
+    #   - "cdb2vol:/opt/couchdb/data"
+
+  cdb3:
+    environment:
+      COUCHDB_PASSWORD: -pbkdf2-847043acc65626c8eb98da6d78682fbc493a1787,f7b1a3e4b624f4f0bbfe87e96841eda0,10
+      COUCHDB_SECRET: 0123456789abcdef0123456789abcdef
+      COUCHDB_USER: couchdb
+      NODENAME: couchdb3.demo.vme
+    image: couchdb:2.2
+    networks:
+      network:
+        aliases:
+          - couchdb3.demo.vme
+    ports:
+      - "35984:5984"
+      - "35986:5986"
+    volumes:
+      - ./vol/couchdb-configs/cluster.ini:/opt/couchdb/etc/local.d/cluster.ini:ro
+    #   - "cdb3vol:/opt/couchdb/data"
+
+  cdbadmin:
+    image: alpine
+    networks:
+      network:
+    volumes:
+      - ./vol/scripts:/data
+    entrypoint: /data/create_cluster.sh
+
+# volumes:
+#   cdb1vol:
+#   cdb2vol:
+#   cdb3vol:
