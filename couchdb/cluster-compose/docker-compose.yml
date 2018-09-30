@@ -8,9 +8,10 @@ services:
   cdb1:
     environment:
       COUCHDB_PASSWORD: -pbkdf2-847043acc65626c8eb98da6d78682fbc493a1787,f7b1a3e4b624f4f0bbfe87e96841eda0,10
-      COUCHDB_SECRET: 0123456789abcdef0123456789abcdef
-      COUCHDB_USER: couchdb
+      COUCHDB_SECRET: wKMaHSzMDwWQ7U6Pwbxv9J6M
+      COUCHDB_USER: admin
       NODENAME: couchdb1.demo.vme
+      ERL_FLAGS: -setcookie KWSX4Nb4rF6WZDKPAAqDMy5K
     image: couchdb:2.2
     networks:
       network:
@@ -26,9 +27,10 @@ services:
   cdb2:
     environment:
       COUCHDB_PASSWORD: -pbkdf2-847043acc65626c8eb98da6d78682fbc493a1787,f7b1a3e4b624f4f0bbfe87e96841eda0,10
-      COUCHDB_SECRET: 0123456789abcdef0123456789abcdef
-      COUCHDB_USER: couchdb
+      COUCHDB_SECRET: wKMaHSzMDwWQ7U6Pwbxv9J6M
+      COUCHDB_USER: admin
       NODENAME: couchdb2.demo.vme
+      ERL_FLAGS: -setcookie KWSX4Nb4rF6WZDKPAAqDMy5K
     image: couchdb:2.2
     networks:
       network:
@@ -44,9 +46,10 @@ services:
   cdb3:
     environment:
       COUCHDB_PASSWORD: -pbkdf2-847043acc65626c8eb98da6d78682fbc493a1787,f7b1a3e4b624f4f0bbfe87e96841eda0,10
-      COUCHDB_SECRET: 0123456789abcdef0123456789abcdef
-      COUCHDB_USER: couchdb
+      COUCHDB_SECRET: wKMaHSzMDwWQ7U6Pwbxv9J6M
+      COUCHDB_USER: admin
       NODENAME: couchdb3.demo.vme
+      ERL_FLAGS: -setcookie KWSX4Nb4rF6WZDKPAAqDMy5K
     image: couchdb:2.2
     networks:
       network:
@@ -65,7 +68,7 @@ services:
       network:
     volumes:
       - ./vol/scripts:/data
-    entrypoint: /data/create_cluster.sh
+    entrypoint: /data/create_cluster.sh admin password "couchdb1.demo.vme couchdb2.demo.vme couchdb3.demo.vme"
 
 # volumes:
 #   cdb1vol:

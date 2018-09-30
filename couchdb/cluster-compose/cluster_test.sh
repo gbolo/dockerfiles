@@ -1,8 +1,8 @@
-USER_NAME=couchdb
-PASSWORD=password
+ADMIN_USER=admin
+ADMIN_PASSWORD=password
 
 # create database
-curl -X PUT http://${USER_NAME}:${PASSWORD}@127.0.0.1:15984/color
+curl -X PUT http://${ADMIN_USER}:${ADMIN_PASSWORD}@127.0.0.1:15984/color
 
 # add two documents to different peers
 curl -X PUT http://127.0.0.1:15984/color/001 -d '{"name":"red"}'
