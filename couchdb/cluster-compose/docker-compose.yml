@@ -69,6 +69,10 @@ services:
     volumes:
       - ./vol/scripts:/data
     entrypoint: /data/create_cluster.sh admin password "couchdb1.demo.vme couchdb2.demo.vme couchdb3.demo.vme"
+    depends_on:
+      - cdb1
+      - cdb2
+      - cdb3
 
   haproxy:
     image: haproxy:1.8-alpine
@@ -80,6 +84,10 @@ services:
       - "5984:5984"
     volumes:
       - ./vol/haproxy:/usr/local/etc/haproxy:ro
+    depends_on:
+      - cdb1
+      - cdb2
+      - cdb3
 
 # volumes:
 #   cdb1vol:

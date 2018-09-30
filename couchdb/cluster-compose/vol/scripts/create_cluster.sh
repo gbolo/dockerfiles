@@ -16,7 +16,7 @@ fi
 
 function setup {
   apk add --no-cache curl
-  sleep 10
+  sleep 8
 }
 
 function genJsonClusterSetup {
