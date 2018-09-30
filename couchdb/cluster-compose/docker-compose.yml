@@ -74,6 +74,8 @@ services:
     image: haproxy:1.8-alpine
     networks:
       network:
+        aliases:
+          - couchdb.demo.vme
     ports:
       - "5984:5984"
     volumes:
