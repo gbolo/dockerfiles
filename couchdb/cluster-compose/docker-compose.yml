@@ -70,6 +70,15 @@ services:
       - ./vol/scripts:/data
     entrypoint: /data/create_cluster.sh admin password "couchdb1.demo.vme couchdb2.demo.vme couchdb3.demo.vme"
 
+  haproxy:
+    image: haproxy:1.8-alpine
+    networks:
+      network:
+    ports:
+      - "5984:5984"
+    volumes:
+      - ./vol/haproxy:/usr/local/etc/haproxy:ro
+
 # volumes:
 #   cdb1vol:
 #   cdb2vol:
