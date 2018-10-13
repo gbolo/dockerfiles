@@ -68,7 +68,7 @@ services:
       network:
     volumes:
       - ./vol/scripts:/data
-    entrypoint: /data/create_cluster.sh admin password "couchdb1.demo.vme couchdb2.demo.vme couchdb3.demo.vme"
+    entrypoint: /data/create_cluster.sh admin password couchdb1.demo.vme:5984 couchdb2.demo.vme:5984 couchdb3.demo.vme:5984
     depends_on:
       - cdb1
       - cdb2
