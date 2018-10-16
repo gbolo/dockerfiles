@@ -31,8 +31,7 @@ Cluster Membership on: couchdb3.demo.vme
 ./cluster_test.sh
 
 # test the load balancer
-curl http://127.0.0.1:5984/color/001
-{"_id":"001","_rev":"1-f80f2c3a7844c43ef6f0b4e4ef9c2f12","name":"red"}
+./lb_test.sh
 
 # clean up after your done...
 docker-compose down -v

@@ -89,6 +89,21 @@ services:
       - cdb2
       - cdb3
 
+  nginx:
+    image: nginx:alpine
+    networks:
+      network:
+        aliases:
+          - couchdb-nginx.demo.vme
+    ports:
+      - "55984:5984"
+    volumes:
+      - ./vol/nginx/couchdb_lb.conf:/etc/nginx/conf.d/couchdb_lb.conf:ro
+    depends_on:
+      - cdb1
+      - cdb2
+      - cdb3
+      
 # volumes:
 #   cdb1vol:
 #   cdb2vol:
