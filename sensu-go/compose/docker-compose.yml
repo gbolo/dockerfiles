@@ -1,0 +1,68 @@
+################################################################################
+#
+#   docker compose for sensu-go development
+#   intended to be used for testing production-like setups
+#
+################################################################################
+
+version: '2'
+
+services:
+
+  etcd1.sensu.dev:
+    container_name: etcd1
+    extends:
+      file:  defaults.yml
+      service: etcd-base
+    environment:
+      ETCD_NAME: etcd1
+      ETCD_INITIAL_ADVERTISE_PEER_URLS: https://etcd1.sensu.dev:2380
+      ETCD_ADVERTISE_CLIENT_URLS: https://etcd1.sensu.dev:2379
+
+  etcd2.sensu.dev:
+    container_name: etcd2
+    extends:
+      file:  defaults.yml
+      service: etcd-base
+    environment:
+      ETCD_NAME: etcd2
+      ETCD_INITIAL_ADVERTISE_PEER_URLS: https://etcd2.sensu.dev:2380
+      ETCD_ADVERTISE_CLIENT_URLS: https://etcd2.sensu.dev:2379
+
+  etcd3.sensu.dev:
+    container_name: etcd3
+    extends:
+      file:  defaults.yml
+      service: etcd-base
+    environment:
+      ETCD_NAME: etcd3
+      ETCD_INITIAL_ADVERTISE_PEER_URLS: https://etcd3.sensu.dev:2380
+      ETCD_ADVERTISE_CLIENT_URLS: https://etcd3.sensu.dev:2379
+
+  backend.sensu.dev:
+    container_name: backend
+    extends:
+      file:  defaults.yml
+      service: sensu-backend-base
+    ports:
+      - "3000:3000"
+    depends_on:
+      - etcd1.sensu.dev
+      - etcd2.sensu.dev
+      - etcd3.sensu.dev
+
+  agent1.sensu.dev:
+    container_name: agent1
+    hostname: agent1
+    extends:
+      file:  defaults.yml
+      service: sensu-agent-base
+    depends_on:
+      - backend.sensu.dev
+
+networks:
+  sensu-go:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.197.199.0/24

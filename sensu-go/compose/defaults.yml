@@ -1,0 +1,74 @@
+################################################################################
+#
+#   docker compose for sensu-go development
+#   intended to be used for testing production-like setups
+#
+################################################################################
+
+version: '2'
+
+services:
+
+  etcd-base:
+    image: quay.io/coreos/etcd:v3.3.12
+    volumes:
+      # TLS PKI
+      - ./vol/tls:/opt/tls:ro
+    environment:
+      # ETCD_DEBUG: "true"
+      ALLOW_NONE_AUTHENTICATION: "yes"
+      # ETCD_DATA_DIR: /data
+      ETCD_LISTEN_CLIENT_URLS: https://0.0.0.0:2379
+      ETCD_LISTEN_PEER_URLS: https://0.0.0.0:2380
+      ETCD_INITIAL_CLUSTER_STATE: new
+      ETCD_INITIAL_CLUSTER_TOKEN: Peiqr4NohNu6twut
+      ETCD_INITIAL_CLUSTER: etcd1=https://etcd1.sensu.dev:2380,etcd2=https://etcd2.sensu.dev:2380,etcd3=https://etcd3.sensu.dev:2380
+      # TLS config:
+      # enforce mutual TLS only for clients (sensu backend)
+      ETCD_CLIENT_CERT_AUTH: "true"
+      ETCD_TRUSTED_CA_FILE: /opt/tls/etcd_ca_root.pem
+      ETCD_CERT_FILE: /opt/tls/etcd_server-client_etcd.pem
+      ETCD_KEY_FILE: /opt/tls/etcd_server-client_etcd-key.pem
+      # for peer-to-peer just use 1-way TLS
+      ETCD_PEER_TRUSTED_CA_FILE: /opt/tls/etcd_ca_root.pem
+      ETCD_PEER_CERT_FILE: /opt/tls/etcd_server_etcd.pem
+      ETCD_PEER_KEY_FILE: /opt/tls/etcd_server_etcd-key.pem
+    networks:
+      - sensu-go
+
+  sensu-backend-base:
+    image: sensu/sensu:master
+    volumes:
+      # TLS PKI
+      - ./vol/tls:/opt/tls:ro
+    command: >
+      sensu-backend start
+      --log-level info
+      --cert-file /opt/tls/sensu_server_backend.pem
+      --key-file /opt/tls/sensu_server_backend-key.pem
+      --trusted-ca-file /opt/tls/sensu_ca_root.pem
+      --api-url https://127.0.0.1:8080
+      --insecure-skip-tls-verify
+      --no-embed-etcd
+      --etcd-trusted-ca-file=/opt/tls/etcd_ca_root.pem
+      --etcd-cert-file=/opt/tls/etcd_client_etcd.pem
+      --etcd-key-file=/opt/tls/etcd_client_etcd-key.pem
+      --etcd-advertise-client-urls=https://etcd1.sensu.dev:2379,https://etcd2.sensu.dev:2379,https://etcd3.sensu.dev:2379
+    networks:
+      - sensu-go
+
+  sensu-agent-base:
+    image: sensu/sensu:master
+    volumes:
+      # TLS PKI
+      - ./vol/tls:/opt/tls:ro
+    command: >
+      sensu-agent start
+      --log-level info
+      --trusted-ca-file /opt/tls/sensu_ca_root.pem
+      --subscriptions metrics,misc,roundrobin,proxy
+      --keepalive-interval 5
+      --keepalive-timeout 10
+      --backend-url wss://backend.sensu.dev:8081
+    networks:
+      - sensu-go
