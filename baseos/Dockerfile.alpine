@@ -1,7 +1,7 @@
-FROM  alpine:3.8
+FROM  alpine:3.9
 
 # ARGUMENTS
-ARG   baseos=alpine-3.8
+ARG   baseos=alpine-3.9
 ARG   baseos_build_date=undefined
 ARG   baseos_build_ref=undefined
 
@@ -16,7 +16,7 @@ LABEL maintainer="George Bolo <gbolo@linuxctl.com>" \
 ENV   BASEOS=${baseos} \
       BASEOS_BUILD_DATE=${baseos_build_date} \
       BASEOS_BUILD_REF=${baseos_build_ref} \
-      GOSU_VERSION=1.10 \
+      GOSU_VERSION=1.11 \
       CONFD_VERSION=0.16.0
 
 # COPY BASE ENTRYPOINT
