@@ -316,6 +316,11 @@ webserver={{ if getenv "PDNS_ENABLE_WEBSERVER" }}{{ getenv "PDNS_ENABLE_WEBSERVE
 webserver-address={{ if getenv "PDNS_WEBSERVER_ADDRESS" }}{{ getenv "PDNS_WEBSERVER_ADDRESS" }}{{ else }}0.0.0.0{{ end }}
 
 #################################
+# webserver-allow-from  These subnets are allowed to access the webserver
+#
+webserver-allow-from={{ if getenv "PDNS_WEBSERVER_ALLOW_FROM" }}{{ getenv "PDNS_WEBSERVER_ALLOW_FROM" }}{{ else }}0.0.0.0/0{{ end }}
+
+#################################
 # webserver-password	Password required for accessing the webserver
 #
 {{ if getenv "PDNS_WEBSERVER_PASSWORD" }}webserver-password={{ getenv "PDNS_WEBSERVER_PORT" }}{{ else }}# webserver-password={{ end }}

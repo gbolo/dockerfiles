@@ -22,6 +22,7 @@ Light weight, Alpine based pdns (PowerDNS) docker image available at: [gbolo/pdn
   PDNS_QUERY_CACHE_TTL=20
   PDNS_ENABLE_WEBSERVER=yes
   PDNS_WEBSERVER_PORT=8081
+  PDNS_WEBSERVER_ALLOW_FROM="0.0.0.0/0"
   PDNS_ENABLE_API=yes
   PDNS_API_KEY=changeme
   PDNS_LOGLEVEL=3
