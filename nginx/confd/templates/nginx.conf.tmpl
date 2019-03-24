@@ -21,6 +21,7 @@ events {
   worker_connections {{ if getenv "NGINX_WORKER_CONNECTIONS" }}{{ getenv "NGINX_WORKER_CONNECTIONS" }}{{ else }}1024{{ end }};
 }
 
+# Defaults for http module
 http {
 
   # security settings
@@ -84,4 +85,11 @@ http {
 
   # Includes virtual hosts configs.
   include /etc/nginx/conf.d/*.conf;
+}
+
+# Defaults for stream module
+stream {
+  
+    # Includes stream configs.
+    include /etc/nginx/stream.conf.d/*.conf;
 }
