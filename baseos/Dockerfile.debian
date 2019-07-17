@@ -1,7 +1,8 @@
-FROM  debian:stretch-slim
+ARG   debian_version=buster
+FROM  debian:${debian_version}-slim
 
 # ARGUMENTS
-ARG   baseos=alpine-debian-stretch
+ARG   baseos=alpine-debian-${debian_version}
 ARG   baseos_build_date=undefined
 ARG   baseos_build_ref=undefined
 
