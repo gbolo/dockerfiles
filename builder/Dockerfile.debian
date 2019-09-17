@@ -3,7 +3,7 @@
 FROM  gbolo/baseos:debian
 
 # ARGS
-ARG     go_version=1.11.4
+ARG     go_version=1.13.1
 
 # DEFAULTS
 ENV     GOROOT=/opt/go \
