@@ -223,12 +223,12 @@ negquery-cache-ttl=60
 #################################
 # setgid	If set, change group id to this gid for more security
 #
-setgid=pdns
+setgid={{ if getenv "PDNS_SETGID" }}{{ getenv "PDNS_SETGID" }}{{ else }}pdns{{ end }}
 
 #################################
 # setuid	If set, change user id to this uid for more security
 #
-setuid=pdns
+setuid={{ if getenv "PDNS_SETUID" }}{{ getenv "PDNS_SETUID" }}{{ else }}pdns{{ end }}
 
 #################################
 # skip-cname	Do not perform CNAME indirection for each query

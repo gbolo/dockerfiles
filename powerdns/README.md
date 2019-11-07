@@ -26,6 +26,8 @@ Light weight, Alpine based pdns (PowerDNS) docker image available at: [gbolo/pdn
   PDNS_ENABLE_API=yes
   PDNS_API_KEY=changeme
   PDNS_LOGLEVEL=3
+  PDNS_SETUID=pdns
+  PDNS_SETGID=pdns
 
   # Backend config - sqlite3
   PDNS_GSQLITE3_DATABASE=/etc/pdns/data/powerdns.sqlite3.db
