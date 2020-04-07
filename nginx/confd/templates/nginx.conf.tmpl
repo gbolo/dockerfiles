@@ -32,10 +32,10 @@ http {
   ssl_dhparam /etc/tls/nginx/default_dhparam_4096.pem;
 
   # Specifies that our cipher suits should be preferred over client ciphers.
-  ssl_prefer_server_ciphers on;
+  ssl_prefer_server_ciphers {{ if getenv "NGINX_SSL_PREFER_SERVER_CIPHERS" }}{{ getenv "NGINX_SSL_PREFER_SERVER_CIPHERS" }}{{ else }}off{{ end }};
 
-  ssl_protocols           {{ if getenv "NGINX_SSL_PROTOCOLS" }}{{ getenv "NGINX_SSL_PROTOCOLS" }}{{ else }}TLSv1.1 TLSv1.2{{ end }};
-  ssl_ciphers             '{{ if getenv "NGINX_SSL_CIPHERS" }}{{ getenv "NGINX_SSL_CIPHERS" }}{{ else }}EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH:!aNULL:!MD5{{ end }};';
+  ssl_protocols           {{ if getenv "NGINX_SSL_PROTOCOLS" }}{{ getenv "NGINX_SSL_PROTOCOLS" }}{{ else }}TLSv1.2 TLSv1.3{{ end }};
+  ssl_ciphers             '{{ if getenv "NGINX_SSL_CIPHERS" }}{{ getenv "NGINX_SSL_CIPHERS" }}{{ else }}AES256+EECDH:AES256+EDH:AES128+EECDH:CHACHA20+EECDH:!aNULL:!SHA1:!SHA256:!SHA384{{ end }}';
   ssl_session_cache       {{ if getenv "NGINX_SSL_SESSION_CACHE" }}{{ getenv "NGINX_SSL_SESSION_CACHE" }}{{ else }}shared:SSL:2m{{ end }};
   ssl_session_timeout     {{ if getenv "NGINX_SSL_SESSION_TIMEOUT" }}{{ getenv "NGINX_SSL_SESSION_TIMEOUT" }}{{ else }}5m{{ end }};
 
@@ -89,7 +89,7 @@ http {
 
 # Defaults for stream module
 stream {
-  
+
     # Includes stream configs.
     include /etc/nginx/stream.conf.d/*.conf;
 }

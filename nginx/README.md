@@ -13,8 +13,8 @@ Light weight, Alpine based nginx docker image available at: [gbolo/nginx:alpine]
 
 ### pre-installed nginx modules
  - `mod-stream` adds support for stream servers defined in `/etc/nginx/stream.conf.d/*.conf`
- - `mod-http-geoip` adds geoip functionality for http servers
- - `mod-stream-geoip` adds geoip functionality for stream servers
+ - `mod-http-geoip2` adds geoip functionality for http servers
+ - `mod-stream-geoip2` adds geoip functionality for stream servers
 
 ### templated nginx.conf
  - dynamically generated base `nginx.conf` based on the following environment variables:
@@ -23,8 +23,9 @@ Light weight, Alpine based nginx docker image available at: [gbolo/nginx:alpine]
  NGINX_WORKER_CONNECTIONS=1024
  NGINX_MAX_BODY_SIZE=1m
  NGINX_KEEPALIVE_TIMEOUT=65
- NGINX_SSL_PROTOCOLS="TLSv1.1 TLSv1.2"
- NGINX_SSL_CIPHERS="EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH:!aNULL:!MD5"
+ NGINX_SSL_PROTOCOLS="TLSv1.2 TLSv1.3"
+ NGINX_SSL_CIPHERS="AES256+EECDH:AES256+EDH:AES128+EECDH:CHACHA20+EECDH:!aNULL:!SHA1:!SHA256:!SHA384"
+ NGINX_SSL_PREFER_SERVER_CIPHERS="off"
  NGINX_SSL_SESSION_CACHE="shared:SSL:2m"
  NGINX_SSL_SESSION_TIMEOUT=5m
  ```
@@ -37,10 +38,14 @@ The files/directories to watch can be modified by overriding the default environ
 
 **PRO-TIP**: if your using an external method to update TLS certificates (ie: Let's Encrypt), include that directory above.
 
-### secured tls
+### secured TLS
  - strong default tls settings
  - included dhparam pem
+ - *should* get an A rating on ssllabs.com
 
-## MaxMind GEOIP LICENSE
-This docker image includes GeoLite2 data created by MaxMind, available from
-[https://www.maxmind.com](https://www.maxmind.com)
+## NOTICE: GeoLite2 databases have been removed from this image
+THIS FUNCTIONALITY HAS BEEN REMOVED DUE TO THE FOLLOWING CHANGES FROM MAXMIND:
+> Starting December 30, 2019, we will be requiring users of our GeoLite2 databases
+> to register for a MaxMind account and obtain a license key in order to download GeoLite2 databases
+
+*Workaround: download the database with your own account, then mount it into the container*
