@@ -10,10 +10,10 @@ version: '2'
 services:
 
   etcd-base:
-    image: quay.io/coreos/etcd:v3.3.12
+    image: quay.io/coreos/etcd:v3.4.9
     volumes:
       # TLS PKI
-      - ./vol/tls:/opt/tls:ro
+      - ./vol/cfssl/certs:/opt/tls:ro
     environment:
       # ETCD_DEBUG: "true"
       ALLOW_NONE_AUTHENTICATION: "yes"
@@ -26,49 +26,99 @@ services:
       # TLS config:
       # enforce mutual TLS only for clients (sensu backend)
       ETCD_CLIENT_CERT_AUTH: "true"
-      ETCD_TRUSTED_CA_FILE: /opt/tls/etcd_ca_root.pem
-      ETCD_CERT_FILE: /opt/tls/etcd_server-client_etcd.pem
-      ETCD_KEY_FILE: /opt/tls/etcd_server-client_etcd-key.pem
+      ETCD_TRUSTED_CA_FILE: /opt/tls/ca_root.pem
+      ETCD_CERT_FILE: /opt/tls/server-client_etcd.pem
+      ETCD_KEY_FILE: /opt/tls/server-client_etcd-key.pem
       # for peer-to-peer just use 1-way TLS
-      ETCD_PEER_TRUSTED_CA_FILE: /opt/tls/etcd_ca_root.pem
-      ETCD_PEER_CERT_FILE: /opt/tls/etcd_server_etcd.pem
-      ETCD_PEER_KEY_FILE: /opt/tls/etcd_server_etcd-key.pem
+      # ETCD_PEER_CLIENT_CERT_AUTH: "true"
+      ETCD_PEER_TRUSTED_CA_FILE: /opt/tls/ca_root.pem
+      ETCD_PEER_CERT_FILE: /opt/tls/server-client_etcd.pem
+      ETCD_PEER_KEY_FILE: /opt/tls/server-client_etcd-key.pem
     networks:
       - sensu-go
 
   sensu-backend-base:
-    image: sensu/sensu:master
+    # image: gbolo/sensu-go:6.0.0
+    image: sensu/sensu:6
     volumes:
       # TLS PKI
-      - ./vol/tls:/opt/tls:ro
+      - ./vol/cfssl/certs:/opt/tls:ro
+      # --agent-auth-trusted-ca-file /opt/tls/ca_root.pem
+      # --agent-auth-cert-file /opt/tls/server_sensu-backend-chain.pem
+      # --agent-auth-key-file /opt/tls/server_sensu-backend-key.pem
+    environment:
+      # https://docs.sensu.io/sensu-go/latest/reference/backend/
+      SENSU_BACKEND_LOG_LEVEL: debug
+      SENSU_BACKEND_CLUSTER_ADMIN_USERNAME: admin
+      SENSU_BACKEND_CLUSTER_ADMIN_PASSWORD: 'P@ssw0rd!'
+      SENSU_BACKEND_API_LISTEN_ADDRESS: 0.0.0.0:8080
+      SENSU_BACKEND_API_URL: https://127.0.0.1:8080
+      SENSU_BACKEND_TRUSTED_CA_FILE: /opt/tls/ca_root.pem
+      SENSU_BACKEND_CERT_FILE: /opt/tls/server_sensu-backend-chain.pem
+      SENSU_BACKEND_KEY_FILE: /opt/tls/server_sensu-backend-key.pem
+
+      # this is the port that agents connect to
+      SENSU_BACKEND_AGENT_HOST: 0.0.0.0
+      SENSU_BACKEND_AGENT_PORT: 8081
+
+      # when enforcing mutual TLS for agents (commercial feature)
+      # SENSU_BACKEND_AGENT_AUTH_CERT_FILE: /opt/tls/server_sensu-backend-chain.pem
+      # SENSU_BACKEND_AGENT_AUTH_KEY_FILE: /opt/tls/server_sensu-backend-key.pem
+      # SENSU_BACKEND_AGENT_AUTH_TRUSTED_CA_FILE: /opt/tls/ca_root.pem
+
+      # etcd config
+      SENSU_BACKEND_NO_EMBED_ETCD: "true"
+      SENSU_BACKEND_ETCD_CERT_FILE: /opt/tls/client_etcd.pem
+      SENSU_BACKEND_ETCD_KEY_FILE: /opt/tls/client_etcd-key.pem
+      SENSU_BACKEND_ETCD_TRUSTED_CA_FILE: /opt/tls/ca_root.pem
+      # this env var doesnt seem to work...
+      SENSU_BACKEND_ETCD_ADVERTISE_CLIENT_URLS: "https://etcd1.sensu.dev:2379,https://etcd2.sensu.dev:2379,https://etcd3.sensu.dev:2379"
     command: >
       sensu-backend start
-      --log-level info
-      --cert-file /opt/tls/sensu_server_backend.pem
-      --key-file /opt/tls/sensu_server_backend-key.pem
-      --trusted-ca-file /opt/tls/sensu_ca_root.pem
-      --api-url https://127.0.0.1:8080
-      --insecure-skip-tls-verify
-      --no-embed-etcd
-      --etcd-trusted-ca-file=/opt/tls/etcd_ca_root.pem
-      --etcd-cert-file=/opt/tls/etcd_client_etcd.pem
-      --etcd-key-file=/opt/tls/etcd_client_etcd-key.pem
       --etcd-advertise-client-urls=https://etcd1.sensu.dev:2379,https://etcd2.sensu.dev:2379,https://etcd3.sensu.dev:2379
     networks:
       - sensu-go
 
+      # sensu-backend start
+      # --log-level debug
+      # --cert-file /opt/tls/server_sensu-backend-chain.pem
+      # --key-file /opt/tls/server_sensu-backend-key.pem
+      # --trusted-ca-file /opt/tls/ca_root.pem
+      # --api-url https://127.0.0.1:8080
+      # --insecure-skip-tls-verify
+      # --no-embed-etcd
+      # --etcd-trusted-ca-file=/opt/tls/ca_root.pem
+      # --etcd-cert-file=/opt/tls/client_etcd.pem
+      # --etcd-key-file=/opt/tls/client_etcd-key.pem
+      # --etcd-advertise-client-urls=https://etcd1.sensu.dev:2379,https://etcd2.sensu.dev:2379,https://etcd3.sensu.dev:2379
+
   sensu-agent-base:
-    image: sensu/sensu:master
+    # image: gbolo/sensu-go:6.0.0
+    image: sensu/sensu:6
     volumes:
       # TLS PKI
-      - ./vol/tls:/opt/tls:ro
+      - ./vol/cfssl/certs:/opt/tls:ro
+    environment:
+      # https://docs.sensu.io/sensu-go/latest/reference/agent
+      SENSU_LOG_LEVEL: debug
+      SENSU_BACKEND_URL: wss://backend.sensu.dev:8081
+      SENSU_TRUSTED_CA_FILE: "/opt/tls/ca_root.pem"
+      SENSU_CACHE_DIR: /opt/sensu-cache
+      SENSU_LABELS: '{"testurl": "linuxctl.com", "dns_check_host": "linuxctl.com"}'
+      SENSU_SUBSCRIPTIONS: standard_system_checks standard_system_checks_ruby
+      SENSU_DISABLE_API: "true"
+      SENSU_KEEPALIVE_CRITICAL_TIMEOUT: "300"
+      SENSU_KEEPALIVE_WARNING_TIMEOUT: "120"
+      SENSU_KEEPALIVE_INTERVAL: "30"
+      SENSU_NAMESPACE: "default"
+      SENSU_USER: "agent"
+      SENSU_PASSWORD: "changeme"
+      # SENSU_NAME: agentx
+
+      # when using mutual tls
+      # SENSU_CERT_FILE: "/opt/tls/client_sensu-agent.pem"
+      # SENSU_KEY_FILE: "/opt/tls/client_sensu-agent-key.pem"
     command: >
-      sensu-agent start
-      --log-level info
-      --trusted-ca-file /opt/tls/sensu_ca_root.pem
-      --subscriptions metrics,misc,roundrobin,proxy
-      --keepalive-interval 5
-      --keepalive-timeout 10
-      --backend-url wss://backend.sensu.dev:8081
+      sensu-agent start --user agent --password changeme
     networks:
       - sensu-go

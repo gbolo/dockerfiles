@@ -1,0 +1,24 @@
+---
+type: Asset
+api_version: core/v2
+metadata:
+  name: mackerelio-check
+  namespace: default
+  annotations:
+    slack-channel: "#monitoring"
+
+spec:
+  builds:
+    - url: https://repo.linuxctl.com/sensu/assets/mackerelio-check_glibc_linux-amd64.tgz
+      sha512: d64344c0b81fdcf52f2ec59f43c7d45cf30f65825d3ccf548ba998b1d2a89a9781faa5da6f9180d77eb39a0ebd9ff9dea2ebacab035ac243590fd028945d3bb1
+      filters:
+        - entity.system.os == 'linux'
+        - entity.system.arch == 'amd64'
+        - entity.system.platform_family != "alpine"
+
+    - url: https://repo.linuxctl.com/sensu/assets/mackerelio-check_musl_linux-amd64.tgz
+      sha512: ee362704218da08bda2edc2cf4466a1fbd3d128b40ca59db2e59475326ef0966ec0ea0f88fc2a283e64f87b6b1e1999321127f6b0e326bc422d698bc798c0c6b
+      filters:
+        - entity.system.os == 'linux'
+        - entity.system.arch == 'amd64'
+        - entity.system.platform_family == "alpine"

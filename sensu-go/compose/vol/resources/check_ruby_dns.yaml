@@ -1,0 +1,21 @@
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check-dns
+  namespace: default
+
+spec:
+  command: check-dns.rb -d {{index .labels "dns_check_host" | default "google.com"}}
+  handlers:
+    - handler-slack
+  interval: 120
+  publish: true
+  runtime_assets:
+    - sensu-plugins-dns
+    - sensu-ruby-runtime
+  subscriptions:
+    - standard_system_checks_ruby
+  stdin: false
+  timeout: 10
+  round_robin: false

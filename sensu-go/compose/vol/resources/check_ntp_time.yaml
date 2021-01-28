@@ -1,0 +1,20 @@
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check-ntp-time
+  namespace: default
+
+spec:
+  command: check_ntp_time --use-ipv4 -H {{index .labels "ntp_check_host" | default "pool.ntp.org"}} -w 3 -c 5
+  handlers:
+    - handler-slack
+  interval: 300
+  publish: true
+  runtime_assets:
+    - monitoring-plugins
+  subscriptions:
+    - standard_system_checks
+  stdin: false
+  timeout: 12
+  round_robin: false

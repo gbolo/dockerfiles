@@ -1,0 +1,27 @@
+---
+type: CheckConfig
+api_version: core/v2
+spec:
+  command: "check-ping -4 -H 8.8.8.8 -w 15,5% -c 25,15% -p 3"
+  handlers: []
+  high_flap_threshold: 0
+  interval: 30
+  low_flap_threshold: 0
+  publish: true
+  runtime_assets:
+    - basic_checks
+  subscriptions:
+    - basic_checks
+  proxy_entity_name: ''
+  check_hooks:
+  stdin: false
+  subdue:
+  ttl: 300
+  timeout: 5
+  round_robin: false
+  env_vars:
+  metadata:
+    name: check-ping
+    namespace: default
+    labels:
+    annotations:

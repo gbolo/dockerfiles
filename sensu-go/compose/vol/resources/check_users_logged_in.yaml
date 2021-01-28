@@ -1,0 +1,20 @@
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check-users-logged-in
+  namespace: default
+
+spec:
+  command: check_users -w 0 -c 5
+  handlers:
+    - handler-slack
+  interval: 30
+  publish: true
+  runtime_assets:
+    - monitoring-plugins
+  subscriptions:
+    - standard_system_checks
+  stdin: false
+  timeout: 5
+  round_robin: false

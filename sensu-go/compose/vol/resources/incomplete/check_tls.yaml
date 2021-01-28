@@ -1,0 +1,28 @@
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check-tls
+  namespace: default
+
+spec:
+  # command: "sudo --preserve-env=PATH env check-disk -w 80% -c 90% --exclude-type=\"overlay,shm,devtmpfs,proc,tmpfs,devpts\""
+  #command: "sudo check-disk -w 15% -c 5% --exclude-type=\"overlay,shm,devtmpfs,proc,tmpfs,devpts\""
+  command: "check-ssl-cert --host \"{{ .labels.testurl }}\" -w 30 -c 14"
+  handlers: []
+  high_flap_threshold: 0
+  interval: 60
+  low_flap_threshold: 0
+  publish: true
+  runtime_assets:
+    - basic_checks
+  subscriptions:
+    - basic_checks
+  proxy_entity_name: ''
+  check_hooks:
+  stdin: false
+  subdue:
+  ttl: 600
+  timeout: 2
+  round_robin: false
+  env_vars:

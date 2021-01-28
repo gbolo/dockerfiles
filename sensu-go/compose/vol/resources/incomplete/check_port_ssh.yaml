@@ -1,0 +1,27 @@
+---
+type: CheckConfig
+api_version: core/v2
+spec:
+  command: "check-tcp -p 22"
+  handlers: []
+  high_flap_threshold: 0
+  interval: 20
+  low_flap_threshold: 0
+  publish: true
+  runtime_assets:
+    - basic_checks
+  subscriptions:
+    - basic_checks
+  proxy_entity_name: ''
+  check_hooks:
+  stdin: false
+  subdue:
+  ttl: 300
+  timeout: 5
+  round_robin: false
+  env_vars:
+  metadata:
+    name: check-port-ssh
+    namespace: default
+    labels:
+    annotations:

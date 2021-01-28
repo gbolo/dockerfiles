@@ -1,0 +1,10 @@
+---
+type: EventFilter
+api_version: core/v2
+spec:
+  action: allow
+  expressions:
+    -  event.check.occurrences > 10 && (event.check.state == "failing" || event.check.status !== 0)
+metadata:
+  name: testfilter
+  namespace: default

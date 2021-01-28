@@ -1,0 +1,54 @@
+---
+type: Asset
+api_version: core/v2
+metadata:
+  name: sensu-plugins-memory-checks
+  labels:
+  annotations:
+    io.sensu.bonsai.url: https://bonsai.sensu.io/assets/sensu-plugins/sensu-plugins-memory-checks
+    io.sensu.bonsai.api_url: https://bonsai.sensu.io/api/v1/assets/sensu-plugins/sensu-plugins-memory-checks
+    io.sensu.bonsai.tier: Community
+    io.sensu.bonsai.version: 4.1.1
+    io.sensu.bonsai.namespace: sensu-plugins
+    io.sensu.bonsai.name: sensu-plugins-memory-checks
+    io.sensu.bonsai.tags: ruby-runtime-2.4.4
+spec:
+  builds:
+  - url: https://assets.bonsai.sensu.io/db2bd124b2bada73408df8c453f4fb676775b306/sensu-plugins-memory-checks_4.1.1_debian9_linux_amd64.tar.gz
+    sha512: 45ed66c95e71b9f44604a65752262ba8f506c39d8877f032b74ee9b155318f8229de2657ce65785fa1b46024d1b42166769dfe93f61610bf704f8bf5663f1bc8
+    filters:
+    - entity.system.os == 'linux'
+    - entity.system.arch == 'amd64'
+  - url: https://assets.bonsai.sensu.io/db2bd124b2bada73408df8c453f4fb676775b306/sensu-plugins-memory-checks_4.1.1_debian_linux_amd64.tar.gz
+    sha512: a1dff4bc3b890ee60bc559a64c9c89cf81f6638770c2c1bb50482050e95d70cc1b93f39ae5dd2903511f2dd685b1374bd4ddd2032fb0e28183bf5fb77a8065f2
+    filters:
+    - entity.system.os == 'linux'
+    - entity.system.arch == 'amd64'
+    - entity.system.platform_family == 'debian'
+  - url: https://assets.bonsai.sensu.io/db2bd124b2bada73408df8c453f4fb676775b306/sensu-plugins-memory-checks_4.1.1_centos7_linux_amd64.tar.gz
+    sha512: aca2e3815112f8ba1e1f8c7eb25b48f06aec71351c72fc45fb68c5c0c8c42aa3cf2f2b3e62bca6bc2186946406657805f7b7fbee597b7e41a3ffeec46dfa7015
+    filters:
+    - entity.system.os == 'linux'
+    - entity.system.arch == 'amd64'
+    - entity.system.platform_family == 'rhel'
+    - entity.system.platform_version.split('.')[0] == '7'
+  - url: https://assets.bonsai.sensu.io/db2bd124b2bada73408df8c453f4fb676775b306/sensu-plugins-memory-checks_4.1.1_centos6_linux_amd64.tar.gz
+    sha512: aae3a9f69e8848f1b025f2f0808faff32c817c41ff26914bb46cc16665a103ee30b1700d495be0646b97199da53f842505914f5f32e418094e922e04e6e01c34
+    filters:
+    - entity.system.os == 'linux'
+    - entity.system.arch == 'amd64'
+    - entity.system.platform_family == 'rhel'
+    - entity.system.platform_version.split('.')[0] == '6'
+  - url: https://assets.bonsai.sensu.io/db2bd124b2bada73408df8c453f4fb676775b306/sensu-plugins-memory-checks_4.1.1_alpine3.8_linux_amd64.tar.gz
+    sha512: 38a9e030f450a27c3bee063fdcd0aaec34872c3acb147755fe6d03361df9b6d5992d14543b48b62df713c18043fd566ca9ccc84fd8552e1c1c2cc38a62a0988f
+    filters:
+    - entity.system.os == 'linux'
+    - entity.system.arch == 'amd64'
+    - entity.system.platform == 'alpine'
+  - url: https://assets.bonsai.sensu.io/db2bd124b2bada73408df8c453f4fb676775b306/sensu-plugins-memory-checks_4.1.1_alpine_linux_amd64.tar.gz
+    sha512: 217b0836430064eed6a2147e3a37156af5d2aebc8e0e959c87c2fb70f2a52516cedea348a3a5bc3f9848819a20450ad2e80fdddbb3a5c8fdfe280f8d0c053730
+    filters:
+    - entity.system.os == 'linux'
+    - entity.system.arch == 'amd64'
+    - entity.system.platform == 'alpine'
+    - entity.system.platform_version.split('.')[0] == '3'

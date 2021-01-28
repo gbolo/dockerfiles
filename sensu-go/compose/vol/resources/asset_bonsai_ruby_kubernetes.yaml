@@ -1,0 +1,56 @@
+---
+type: Asset
+api_version: core/v2
+metadata:
+  name: sensu-plugins-kubernetes
+  labels:
+  annotations:
+    io.sensu.bonsai.url: https://bonsai.sensu.io/assets/sensu-plugins/sensu-plugins-kubernetes
+    io.sensu.bonsai.api_url: https://bonsai.sensu.io/api/v1/assets/sensu-plugins/sensu-plugins-kubernetes
+    io.sensu.bonsai.tier: Community
+    io.sensu.bonsai.version: 5.0.1
+    io.sensu.bonsai.namespace: sensu-plugins
+    io.sensu.bonsai.name: sensu-plugins-kubernetes
+    io.sensu.bonsai.tags: kubernetes
+spec:
+  builds:
+  - url: https://assets.bonsai.sensu.io/167d4ef12ee4d3bb82ee2d3cc5f2014097ea36d9/sensu-plugins-kubernetes_5.0.1_debian9_linux_amd64.tar.gz
+    sha512: 1abf619c2ac7e1501cb5e89118b87676447dd40078b061bb132783313c5a32013f42370eced838a30619cdbb0583fb15a98a6774ea7c70b2d299bee31efc880a
+    filters:
+    - entity.system.os == 'linux'
+    - entity.system.arch == 'amd64'
+    - entity.system.platform_family == 'debian'
+    - entity.system.platform_version.split('.')[0] == '9'
+  - url: https://assets.bonsai.sensu.io/167d4ef12ee4d3bb82ee2d3cc5f2014097ea36d9/sensu-plugins-kubernetes_5.0.1_centos7_linux_amd64.tar.gz
+    sha512: 0454d2076833d041163ac04536406cfebcd94937384b5dd5b0ef0912355748ab673e4ba5f6aed852b72406ee5ca2af6b3b8e8fbbab6646917dae4c27dfa08568
+    filters:
+    - entity.system.os == 'linux'
+    - entity.system.arch == 'amd64'
+    - entity.system.platform_family == 'rhel'
+    - entity.system.platform_version.split('.')[0] == '7'
+  - url: https://assets.bonsai.sensu.io/167d4ef12ee4d3bb82ee2d3cc5f2014097ea36d9/sensu-plugins-kubernetes_5.0.1_centos6_linux_amd64.tar.gz
+    sha512: 7f2c26c4321ab8435f0dae824bd96dceddd45a7d69db182059b21a812a14e31082a2545191e9dc7a8eed912b2a190e250f4fd0c949c78060aff81978d0d9fa53
+    filters:
+    - entity.system.os == 'linux'
+    - entity.system.arch == 'amd64'
+    - entity.system.platform_family == 'rhel'
+    - entity.system.platform_version.split('.')[0] == '6'
+  - url: https://assets.bonsai.sensu.io/167d4ef12ee4d3bb82ee2d3cc5f2014097ea36d9/sensu-plugins-kubernetes_5.0.1_alpine3.8_linux_amd64.tar.gz
+    sha512: b78f9395c15abd9762cc61cc34a1c27b536e95c0173f0fa7887ebad158e3ed4a7be4ed97bdd8a1df53371cdd2005fe8202e6080f502a6476e0d51833efc13dd2
+    filters:
+    - entity.system.os == 'linux'
+    - entity.system.arch == 'amd64'
+    - entity.system.platform == 'alpine'
+  - url: https://assets.bonsai.sensu.io/167d4ef12ee4d3bb82ee2d3cc5f2014097ea36d9/sensu-plugins-kubernetes_5.0.1_alpine_linux_amd64.tar.gz
+    sha512: 4847b366469f1d05e48f37b883d452158c40fdd685debf06adcf07dc6704173ee81c86846bdb942007412d0c58dfd09dc51c3e3477d9f79fc66f6e5897c6ee53
+    filters:
+    - entity.system.os == 'linux'
+    - entity.system.arch == 'amd64'
+    - entity.system.platform == 'alpine'
+    - entity.system.platform_version.split('.')[0] == '3'
+  - url: https://assets.bonsai.sensu.io/167d4ef12ee4d3bb82ee2d3cc5f2014097ea36d9/sensu-plugins-kubernetes_5.0.1_debian_linux_amd64.tar.gz
+    sha512: 04fa709f4de93225186dceb7b04064883fde14be6c848b220384d2b4fafa574f08888d6e04071e0b6eb4fa9725292140baebc2d3587013daf283ec608bf5d119
+    filters:
+    - entity.system.os == 'linux'
+    - entity.system.arch == 'amd64'
+    - entity.system.platform_family == 'debian'

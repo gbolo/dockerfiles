@@ -1,0 +1,23 @@
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check-dns
+  namespace: default
+
+spec:
+  command: mackerel-check -H {{ .labels.dns-check-host | default "google.com" }}
+  handlers:
+    - handler-slack
+  high_flap_threshold: 0
+  interval: 30
+  low_flap_threshold: 0
+  publish: true
+  runtime_assets:
+    - mackerelio-check
+  subscriptions:
+    - standard_system_checks
+  stdin: false
+  ttl: 300
+  timeout: 5
+  round_robin: false

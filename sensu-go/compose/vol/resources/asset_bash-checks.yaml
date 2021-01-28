@@ -1,0 +1,15 @@
+---
+type: Asset
+api_version: core/v2
+metadata:
+  name: bash-checks-linux
+  namespace: default
+  annotations:
+    slack-channel: "#monitoring"
+
+spec:
+  builds:
+    - url: https://repo.linuxctl.com/sensu/assets/bash-checks-linux.tgz
+      sha512: f36b833ce84255ea78cfa695b8d734b7be971386d9c098099e02cbee5b602e1b959d5cc048892d1f6e8a3a41aad14df87018a27936ff2b6d94d892ade28090dc
+      filters:
+        - entity.system.os == 'linux'

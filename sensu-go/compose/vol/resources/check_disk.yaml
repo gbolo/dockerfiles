@@ -1,0 +1,20 @@
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check-disks
+  namespace: default
+
+spec:
+  command: mackerel-check disk -w 15% -c 5% --exclude-type="overlay,shm,devtmpfs,proc,tmpfs,devpts"
+  handlers:
+    - handler-slack
+  interval: 60
+  publish: true
+  runtime_assets:
+    - mackerelio-check
+  subscriptions:
+    - standard_system_checks
+  stdin: false
+  timeout: 2
+  round_robin: false

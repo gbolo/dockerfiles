@@ -51,12 +51,54 @@ services:
       - etcd2.sensu.dev
       - etcd3.sensu.dev
 
-  agent1.sensu.dev:
-    container_name: agent1
-    hostname: agent1
+  # web.sensu.dev:
+  #   container_name: frontend
+  #   image: gbolo/sensu-go-web:1.0.1
+  #   # extends:
+  #   #   file:  defaults.yml
+  #   #   service: sensu-backend-base
+  #   environment:
+  #     NODE_ENV: production
+  #     PORT: "3000"
+  #     API_URL: https://backend.sensu.dev:8080
+  #     SENSU_BACKEND_TRUSTED_CA_FILE: /usr/share/ca-certificates/ca_root.crt
+  #   volumes:
+  #     - ./vol/cfssl/certs/ca_root.pem:/usr/share/ca-certificates/ca_root.crt:ro
+  #     - ./vol/cfssl/certs/ca_int.pem:/usr/share/ca-certificates/ca_int.crt:ro
+  #   working_dir: /web
+  #   entrypoint: []
+  #   command: >
+  #     bash -c "update-ca-certificates && yarn node scripts serve"
+  #   ports:
+  #     - "3000:3000"
+  #   networks:
+  #     - sensu-go
+  #   depends_on:
+  #     - backend.sensu.dev
+
+  agent.sensu.dev:
+    # container_name: agent1
+    # hostname: agent1
     extends:
       file:  defaults.yml
       service: sensu-agent-base
+    depends_on:
+      - backend.sensu.dev
+
+  admin.sensu.dev:
+    # container_name: agent1
+    # hostname: agent1
+    # image: gbolo/sensu-go:6.0.0
+    image: sensu/sensu:6
+    volumes:
+      # TLS PKI
+      - ./vol/cfssl/certs:/opt/tls:ro
+      # admin stuff
+      - ./vol/resources:/opt/sensu/resources:ro
+      - ./vol/scripts:/opt/sensu/scripts
+    entrypoint: /opt/sensu/scripts/entrypoint.sh
+    networks:
+      - sensu-go
     depends_on:
       - backend.sensu.dev
 

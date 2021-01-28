@@ -1,0 +1,20 @@
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check-load
+  namespace: default
+
+spec:
+  command: mackerel-check load --critical "5,10,15" --warning "2,5,10"
+  handlers:
+    - handler-slack
+  interval: 20
+  publish: true
+  runtime_assets:
+    - mackerelio-check
+  subscriptions:
+    - standard_system_checks
+  stdin: false
+  timeout: 5
+  round_robin: false

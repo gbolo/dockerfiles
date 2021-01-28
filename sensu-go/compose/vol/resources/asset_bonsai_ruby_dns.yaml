@@ -1,0 +1,60 @@
+---
+type: Asset
+api_version: core/v2
+metadata:
+  name: sensu-plugins-dns
+  labels:
+  annotations:
+    io.sensu.bonsai.url: https://bonsai.sensu.io/assets/sensu-plugins/sensu-plugins-dns
+    io.sensu.bonsai.api_url: https://bonsai.sensu.io/api/v1/assets/sensu-plugins/sensu-plugins-dns
+    io.sensu.bonsai.tier: Community
+    io.sensu.bonsai.version: 3.0.0
+    io.sensu.bonsai.namespace: sensu-plugins
+    io.sensu.bonsai.name: sensu-plugins-dns
+    io.sensu.bonsai.tags: ''
+spec:
+  builds:
+  - url: https://assets.bonsai.sensu.io/271b0506fe155eaf2e137c71f643608d4ce785d4/sensu-plugins-dns_3.0.0_debian9_linux_amd64.tar.gz
+    sha512: 75f212aab3255c5862ea84b83951097bd1ad41963714e0f5bbafd5404556b962091d5c95790b3e5f10ac9a728838887f16d84af33e4956bd2265c77d61fbda54
+    filters:
+    - entity.system.os == 'linux'
+    - entity.system.arch == 'amd64'
+  - url: https://assets.bonsai.sensu.io/271b0506fe155eaf2e137c71f643608d4ce785d4/sensu-plugins-dns_3.0.0_debian_linux_amd64.tar.gz
+    sha512: c756a98e4f93671c0fab88e19fd900e32635425c2d9ca5bcd16d223063e6d3553c0f32e5532ff58130bd344160260302f41d224101ff75023de56823a5c0e671
+    filters:
+    - entity.system.os == 'linux'
+    - entity.system.arch == 'amd64'
+    - entity.system.platform_family == 'debian'
+  - url: https://assets.bonsai.sensu.io/271b0506fe155eaf2e137c71f643608d4ce785d4/sensu-plugins-dns_3.0.0_centos7_linux_amd64.tar.gz
+    sha512: 7c418e572358387a9745776e9f182d7d259a3233f3d0fc2af23bd0b9a20ef12631e9f0f707d954a0b1a9716d25ade08fb84da5ef2cac27d7e2a5537ecc4a0ffb
+    filters:
+    - entity.system.os == 'linux'
+    - entity.system.arch == 'amd64'
+    - entity.system.platform_family == 'rhel'
+    - entity.system.platform_version.split('.')[0] == '7'
+  - url: https://assets.bonsai.sensu.io/271b0506fe155eaf2e137c71f643608d4ce785d4/sensu-plugins-dns_3.0.0_centos6_linux_amd64.tar.gz
+    sha512: d9e5d922e54a1a34786307b49b13395fbb59196b1db319ba5875c65d17bbed2ca1d4576bab8c3b048fea537eb4c66ee9b9e7d2f5dcef4cb59ef2fb1ee3b9dbe6
+    filters:
+    - entity.system.os == 'linux'
+    - entity.system.arch == 'amd64'
+    - entity.system.platform_family == 'rhel'
+    - entity.system.platform_version.split('.')[0] == '6'
+  - url: https://assets.bonsai.sensu.io/271b0506fe155eaf2e137c71f643608d4ce785d4/sensu-plugins-dns_3.0.0_centos_linux_amd64.tar.gz
+    sha512: 11bdaa049146e2657d80d65d062d4a442bbfe26ac358cd670f0f8eb50d4bf7f41328f45652abcc4dda3398ef14051d33e428ee6b66587b471c7135926abd262d
+    filters:
+    - entity.system.os == 'linux'
+    - entity.system.arch == 'amd64'
+    - entity.system.platform_family == 'rhel'
+  - url: https://assets.bonsai.sensu.io/271b0506fe155eaf2e137c71f643608d4ce785d4/sensu-plugins-dns_3.0.0_alpine3.8_linux_amd64.tar.gz
+    sha512: c9891173296f30689258b858a514d9fa5ae43fd8019747a95211cc00a6c9474044684ba107da2596dd61c73a5d4890c7f61dc756c1068e427729aa04a0cd8d04
+    filters:
+    - entity.system.os == 'linux'
+    - entity.system.arch == 'amd64'
+    - entity.system.platform == 'alpine'
+  - url: https://assets.bonsai.sensu.io/271b0506fe155eaf2e137c71f643608d4ce785d4/sensu-plugins-dns_3.0.0_alpine_linux_amd64.tar.gz
+    sha512: bea10b0854dea306e9c4f0d4763de0d46d855329c84a4e8169800dee0a166bd238ccfe639f69b728cd8583e002d09285f68fb1f8968ae01249bcaa51b397c124
+    filters:
+    - entity.system.os == 'linux'
+    - entity.system.arch == 'amd64'
+    - entity.system.platform == 'alpine'
+    - entity.system.platform_version.split('.')[0] == '3'

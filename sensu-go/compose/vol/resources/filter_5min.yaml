@@ -1,0 +1,10 @@
+---
+type: EventFilter
+api_version: core/v2
+spec:
+  action: allow
+  expressions:
+    -  event.check.occurrences == 1 || event.check.occurrences % (300 / event.check.interval) == 0
+metadata:
+  name: filter5min
+  namespace: default

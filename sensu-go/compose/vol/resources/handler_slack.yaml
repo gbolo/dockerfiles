@@ -1,0 +1,18 @@
+---
+type: Handler
+api_version: core/v2
+spec:
+  type: pipe
+  command: "sensu-slack-handler --channel '#sensu-test' --timeout 20"
+  runtime_assets:
+    - slack_handler
+  timeout: 30
+  filters:
+    # - is_incident
+    - filter5min
+    - testfilter
+  env_vars:
+    - SLACK_WEBHOOK_URL=https://hooks.slack.com/services/<redacted>
+metadata:
+  name: handler-slack
+  namespace: default

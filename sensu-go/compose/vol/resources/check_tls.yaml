@@ -1,0 +1,20 @@
+---
+type: CheckConfig
+api_version: core/v2
+metadata:
+  name: check-tls
+  namespace: default
+
+spec:
+  command: mackerel-check ssl-cert --host "{{ .labels.testurl }}" -w 30 -c 14
+  interval: 60
+  publish: true
+  runtime_assets:
+    - mackerelio-check
+  subscriptions:
+    - standard_system_checks
+  stdin: false
+  subdue:
+  ttl: 600
+  timeout: 2
+  round_robin: false

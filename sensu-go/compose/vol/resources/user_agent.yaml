@@ -1,0 +1,10 @@
+type: User
+api_version: core/v2
+metadata:
+  name: agent
+spec:
+  disabled: false
+  groups:
+  - system:agents
+  username: agent
+  password: changeme
